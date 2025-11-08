@@ -9,7 +9,13 @@
     "noData": "No hay datos disponibles",
     "error": "Ocurrió un error al cargar los datos",
     "retry": "Reintentar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "export": "Exportar",
+    "exportCSV": "Exportar a CSV",
+    "exportProjects": "Exportar Proyectos",
+    "exportTeam": "Exportar Equipo",
+    "exportAlerts": "Exportar Alertas",
+    "exportAll": "Exportar Todos los Datos"
   },
   "tabs": {
     "overview": "Resumen",

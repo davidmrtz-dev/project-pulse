@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages } from 'lucide-react';
+import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages, Download } from 'lucide-react';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useI18n } from './i18n/I18nProvider';
 import { useStore } from './store/useStore';
@@ -8,6 +8,12 @@ import { ProjectsTable } from './components/ProjectsTable';
 import { TeamPerformance } from './components/TeamPerformance';
 import { Alerts } from './components/Alerts';
 import { Filters } from './components/Filters';
+import {
+  exportProjectsToCSV,
+  exportTeamMembersToCSV,
+  exportAlertsToCSV,
+  exportAllDataToCSV,
+} from './lib/csvExport';
 
 export default function App() {
   const {
@@ -48,6 +54,7 @@ export default function App() {
   const { isDark, toggle } = useDarkMode();
   const { t, language, setLanguage } = useI18n();
   const [showLangMenu, setShowLangMenu] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   useEffect(() => {
     fetchAll();
@@ -144,6 +151,31 @@ export default function App() {
     setFilters(newFilters);
   };
 
+  const handleExportProjects = () => {
+    exportProjectsToCSV(filteredProjects);
+    setShowExportMenu(false);
+  };
+
+  const handleExportTeam = () => {
+    exportTeamMembersToCSV(filteredTeamMembers);
+    setShowExportMenu(false);
+  };
+
+  const handleExportAlerts = () => {
+    exportAlertsToCSV(allAlerts);
+    setShowExportMenu(false);
+  };
+
+  const handleExportAll = () => {
+    exportAllDataToCSV({
+      projects: filteredProjects,
+      teamMembers: filteredTeamMembers,
+      alerts: allAlerts,
+      kpi,
+    });
+    setShowExportMenu(false);
+  };
+
   const tabs = [
     { id: 'overview' as const, label: t('tabs.overview'), icon: LayoutDashboard },
     { id: 'projects' as const, label: t('tabs.projects'), icon: FolderKanban },
@@ -163,6 +195,59 @@ export default function App() {
               <Filters filters={filters} onFilterChange={handleFilterChange} />
               <div className="text-sm text-text-secondary dark:text-text-secondary-dark hidden sm:block">
                 {t('common.demo')}
+              </div>
+              
+              {/* Export Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  className="p-2 rounded-lg hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors flex items-center gap-1"
+                  aria-label={t('common.export')}
+                >
+                  <Download className="w-5 h-5 text-text-secondary dark:text-text-secondary-dark" />
+                  <span className="hidden sm:inline text-xs font-medium text-text-secondary dark:text-text-secondary-dark">
+                    {t('common.export')}
+                  </span>
+                </button>
+                {showExportMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowExportMenu(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-48 bg-bg-panel dark:bg-bg-panel-dark border border-border dark:border-border-dark rounded-lg shadow-lg z-20 overflow-hidden">
+                      <button
+                        onClick={handleExportProjects}
+                        className="w-full px-4 py-2 text-left text-sm text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors flex items-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        {t('common.exportProjects')}
+                      </button>
+                      <button
+                        onClick={handleExportTeam}
+                        className="w-full px-4 py-2 text-left text-sm text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors flex items-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        {t('common.exportTeam')}
+                      </button>
+                      <button
+                        onClick={handleExportAlerts}
+                        className="w-full px-4 py-2 text-left text-sm text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors flex items-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        {t('common.exportAlerts')}
+                      </button>
+                      <div className="border-t border-border dark:border-border-dark" />
+                      <button
+                        onClick={handleExportAll}
+                        className="w-full px-4 py-2 text-left text-sm font-medium text-primary dark:text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors flex items-center gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        {t('common.exportAll')}
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
               
               {/* Language Selector */}
