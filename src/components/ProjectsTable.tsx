@@ -9,6 +9,8 @@ import {
 } from '@tanstack/react-table';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useI18n } from '../i18n/I18nProvider';
+import { SkeletonTableRow } from './Loading';
+import { ErrorCard } from './Error';
 
 type Project = {
   id: string;
@@ -34,11 +36,33 @@ const priorityColors = {
   low: 'bg-success dark:bg-success-dark',
 };
 
-export function ProjectsTable({ projects }: { projects: Project[] }) {
+type ProjectsTableProps = {
+  projects: Project[];
+  loading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
+};
+
+export function ProjectsTable({ projects, loading, error, onRetry }: ProjectsTableProps) {
   const { isDark } = useDarkMode();
   const { t } = useI18n();
   const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+
+  if (error) {
+    return (
+      <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm border border-border dark:border-border-dark overflow-hidden">
+        <div className="p-4 border-b border-border dark:border-border-dark">
+          <h2 className="text-lg font-semibold text-text-primary dark:text-text-primary-dark">
+            {t('projects.title')}
+          </h2>
+        </div>
+        <div className="p-6">
+          <ErrorCard message={error} onRetry={onRetry} />
+        </div>
+      </div>
+    );
+  }
 
   const columns = useMemo(
     () => [
@@ -165,18 +189,34 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="border-b border-border dark:border-border-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-3">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+            {loading ? (
+              <>
+                <SkeletonTableRow />
+                <SkeletonTableRow />
+                <SkeletonTableRow />
+                <SkeletonTableRow />
+                <SkeletonTableRow />
+              </>
+            ) : table.getRowModel().rows.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-text-secondary dark:text-text-secondary-dark">
+                  {t('common.noData')}
+                </td>
               </tr>
-            ))}
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  className="border-b border-border dark:border-border-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-4 py-3">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

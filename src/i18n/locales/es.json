@@ -6,7 +6,9 @@
     "clear": "Limpiar",
     "all": "Todos",
     "loading": "Cargando...",
-    "noData": "No hay datos disponibles"
+    "noData": "No hay datos disponibles",
+    "error": "Ocurrió un error al cargar los datos",
+    "retry": "Reintentar"
   },
   "tabs": {
     "overview": "Resumen",

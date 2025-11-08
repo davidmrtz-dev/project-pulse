@@ -1,5 +1,7 @@
 import { AlertTriangle, Info, XCircle } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { LoadingSpinner } from './Loading';
+import { ErrorCard } from './Error';
 
 type Alert = {
   id: string;
@@ -20,8 +22,27 @@ const alertColors = {
   info: 'bg-primary/10 dark:bg-primary-dark/10 border-primary dark:border-primary-dark text-primary dark:text-primary-dark',
 };
 
-export function Alerts({ alerts }: { alerts: Alert[] }) {
+type AlertsProps = {
+  alerts: Alert[];
+  loading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
+};
+
+export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
   const { t } = useI18n();
+
+  if (error) {
+    return <ErrorCard message={error} onRetry={onRetry} />;
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-6 border border-border dark:border-border-dark">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   if (alerts.length === 0) {
     return (

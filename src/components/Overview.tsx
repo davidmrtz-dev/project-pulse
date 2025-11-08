@@ -1,6 +1,8 @@
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useI18n } from '../i18n/I18nProvider';
+import { SkeletonCard, LoadingSpinner } from './Loading';
+import { ErrorCard } from './Error';
 
 type KPI = {
   throughput: number;
@@ -25,17 +27,53 @@ function KpiCard({ label, value, suffix }: { label: string; value: string | numb
   );
 }
 
-export function Overview({ kpi, series }: { kpi: KPI | null; series: Point[] }) {
+type OverviewProps = {
+  kpi: KPI | null;
+  series: Point[];
+  loading?: {
+    kpi: boolean;
+    series: boolean;
+  };
+  errors?: {
+    kpi: string | null;
+    series: string | null;
+  };
+  onRetry?: {
+    kpi?: () => void;
+    series?: () => void;
+  };
+};
+
+export function Overview({ kpi, series, loading, errors, onRetry }: OverviewProps) {
   const { isDark } = useDarkMode();
   const { t } = useI18n();
+
+  // Show error if KPI failed
+  if (errors?.kpi) {
+    return (
+      <div className="space-y-6">
+        <ErrorCard message={errors.kpi} onRetry={onRetry?.kpi} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* KPIs */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <KpiCard label={t('overview.kpis.throughput')} value={kpi?.throughput ?? '—'} suffix="/wk" />
-        <KpiCard label={t('overview.kpis.cycleTime')} value={kpi?.cycleTimeDays ?? '—'} suffix="d" />
-        <KpiCard label={t('overview.kpis.onTimeRate')} value={kpi ? `${Math.round(kpi.onTimeRate * 100)}%` : '—'} />
+        {loading?.kpi ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : (
+          <>
+            <KpiCard label={t('overview.kpis.throughput')} value={kpi?.throughput ?? '—'} suffix="/wk" />
+            <KpiCard label={t('overview.kpis.cycleTime')} value={kpi?.cycleTimeDays ?? '—'} suffix="d" />
+            <KpiCard label={t('overview.kpis.onTimeRate')} value={kpi ? `${Math.round(kpi.onTimeRate * 100)}%` : '—'} />
+          </>
+        )}
       </section>
 
       {/* Charts Grid */}
@@ -46,8 +84,13 @@ export function Overview({ kpi, series }: { kpi: KPI | null; series: Point[] }) 
             {t('overview.charts.velocity')}
           </h2>
           <div className="h-72">
-            <ResponsiveContainer>
-              <LineChart data={series}>
+            {errors?.series ? (
+              <ErrorCard message={errors.series} onRetry={onRetry?.series} />
+            ) : loading?.series ? (
+              <LoadingSpinner size="lg" />
+            ) : (
+              <ResponsiveContainer>
+                <LineChart data={series}>
                 <XAxis
                   dataKey="month"
                   stroke={isDark ? '#B0BEC5' : '#555555'}
@@ -74,6 +117,7 @@ export function Overview({ kpi, series }: { kpi: KPI | null; series: Point[] }) 
                 />
               </LineChart>
             </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -83,8 +127,13 @@ export function Overview({ kpi, series }: { kpi: KPI | null; series: Point[] }) 
             {t('overview.charts.completion')}
           </h2>
           <div className="h-72">
-            <ResponsiveContainer>
-              <AreaChart data={series}>
+            {errors?.series ? (
+              <ErrorCard message={errors.series} onRetry={onRetry?.series} />
+            ) : loading?.series ? (
+              <LoadingSpinner size="lg" />
+            ) : (
+              <ResponsiveContainer>
+                <AreaChart data={series}>
                 <XAxis
                   dataKey="month"
                   stroke={isDark ? '#B0BEC5' : '#555555'}
@@ -111,6 +160,7 @@ export function Overview({ kpi, series }: { kpi: KPI | null; series: Point[] }) 
                 />
               </AreaChart>
             </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useI18n } from '../i18n/I18nProvider';
+import { SkeletonCard, LoadingSpinner } from './Loading';
+import { ErrorCard } from './Error';
 
 type TeamMember = {
   id: string;
@@ -10,9 +12,24 @@ type TeamMember = {
   weeklyProductivity: number;
 };
 
-export function TeamPerformance({ teamMembers }: { teamMembers: TeamMember[] }) {
+type TeamPerformanceProps = {
+  teamMembers: TeamMember[];
+  loading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
+};
+
+export function TeamPerformance({ teamMembers, loading, error, onRetry }: TeamPerformanceProps) {
   const { isDark } = useDarkMode();
   const { t } = useI18n();
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <ErrorCard message={error} onRetry={onRetry} />
+      </div>
+    );
+  }
 
   const chartData = teamMembers.map((member) => ({
     name: member.name.split(' ')[0], // First name only
@@ -33,8 +50,11 @@ export function TeamPerformance({ teamMembers }: { teamMembers: TeamMember[] }) 
           {t('team.velocity')}
         </h3>
         <div className="h-64">
-          <ResponsiveContainer>
-            <BarChart data={chartData}>
+          {loading ? (
+            <LoadingSpinner size="lg" />
+          ) : (
+            <ResponsiveContainer>
+              <BarChart data={chartData}>
               <XAxis
                 dataKey="name"
                 stroke={isDark ? '#B0BEC5' : '#555555'}
@@ -59,12 +79,24 @@ export function TeamPerformance({ teamMembers }: { teamMembers: TeamMember[] }) 
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          )}
         </div>
       </div>
 
       {/* Team Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {teamMembers.map((member) => (
+        {loading ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : teamMembers.length === 0 ? (
+          <div className="col-span-full text-center py-8 text-text-secondary dark:text-text-secondary-dark">
+            {t('common.noData')}
+          </div>
+        ) : (
+          teamMembers.map((member) => (
           <div
             key={member.id}
             className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark"
@@ -93,7 +125,8 @@ export function TeamPerformance({ teamMembers }: { teamMembers: TeamMember[] }) 
               </div>
             </div>
           </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

@@ -6,7 +6,9 @@
     "clear": "Clear",
     "all": "All",
     "loading": "Loading...",
-    "noData": "No data available"
+    "noData": "No data available",
+    "error": "An error occurred while loading data",
+    "retry": "Retry"
   },
   "tabs": {
     "overview": "Overview",

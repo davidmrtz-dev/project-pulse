@@ -1,71 +1,42 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages } from 'lucide-react';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useI18n } from './i18n/I18nProvider';
+import { useStore } from './store/useStore';
 import { Overview } from './components/Overview';
 import { ProjectsTable } from './components/ProjectsTable';
 import { TeamPerformance } from './components/TeamPerformance';
 import { Alerts } from './components/Alerts';
 import { Filters } from './components/Filters';
 
-type KPI = { throughput: number; cycleTimeDays: number; onTimeRate: number };
-type Point = { month: number; velocity: number; completion: number };
-type Project = {
-  id: string;
-  name: string;
-  owner: string;
-  progress: number;
-  status: 'on-track' | 'delayed' | 'blocked';
-  estimatedDate: string;
-  priority: 'high' | 'medium' | 'low';
-};
-type TeamMember = {
-  id: string;
-  name: string;
-  velocity: number;
-  onTimeRate: number;
-  weeklyProductivity: number;
-};
-type Alert = {
-  id: string;
-  type: 'warning' | 'error' | 'info';
-  message: string;
-  timestamp: string;
-};
-
-type Tab = 'overview' | 'projects' | 'team' | 'alerts';
-
-type FilterState = {
-  dateRange: string;
-  team: string;
-  status: string;
-  priority: string;
-};
-
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('overview');
-  const [kpi, setKpi] = useState<KPI | null>(null);
-  const [series, setSeries] = useState<Point[]>([]);
-  const [allProjects, setAllProjects] = useState<Project[]>([]);
-  const [allTeamMembers, setAllTeamMembers] = useState<TeamMember[]>([]);
-  const [allAlerts, setAllAlerts] = useState<Alert[]>([]);
-  const [filters, setFilters] = useState<FilterState>({
-    dateRange: 'all',
-    team: 'all',
-    status: 'all',
-    priority: 'all',
-  });
+  const {
+    kpi,
+    series,
+    projects: allProjects,
+    teamMembers: allTeamMembers,
+    alerts: allAlerts,
+    activeTab,
+    filters,
+    loading,
+    errors,
+    setActiveTab,
+    setFilters,
+    fetchAll,
+    fetchKpi,
+    fetchSeries,
+    fetchProjects,
+    fetchTeam,
+    fetchAlerts,
+  } = useStore();
+
   const { isDark, toggle } = useDarkMode();
   const { t, language, setLanguage } = useI18n();
   const [showLangMenu, setShowLangMenu] = useState(false);
 
   useEffect(() => {
-    fetch('/api/kpis').then((r) => r.json()).then(setKpi);
-    fetch('/api/series').then((r) => r.json()).then(setSeries);
-    fetch('/api/projects').then((r) => r.json()).then(setAllProjects);
-    fetch('/api/team').then((r) => r.json()).then(setAllTeamMembers);
-    fetch('/api/alerts').then((r) => r.json()).then(setAllAlerts);
-  }, []);
+    fetchAll();
+  }, [fetchAll]);
 
   // Filter projects based on filter state
   const filteredProjects = useMemo(() => {
@@ -144,15 +115,15 @@ export default function App() {
     return allTeamMembers.filter((m) => m.name === memberName);
   }, [allTeamMembers, filters.team]);
 
-  const handleFilterChange = (newFilters: FilterState) => {
+  const handleFilterChange = (newFilters: typeof filters) => {
     setFilters(newFilters);
   };
 
   const tabs = [
-    { id: 'overview' as Tab, label: t('tabs.overview'), icon: LayoutDashboard },
-    { id: 'projects' as Tab, label: t('tabs.projects'), icon: FolderKanban },
-    { id: 'team' as Tab, label: t('tabs.team'), icon: Users },
-    { id: 'alerts' as Tab, label: t('tabs.alerts'), icon: Bell },
+    { id: 'overview' as const, label: t('tabs.overview'), icon: LayoutDashboard },
+    { id: 'projects' as const, label: t('tabs.projects'), icon: FolderKanban },
+    { id: 'team' as const, label: t('tabs.team'), icon: Users },
+    { id: 'alerts' as const, label: t('tabs.alerts'), icon: Bell },
   ];
 
   return (
@@ -258,10 +229,39 @@ export default function App() {
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-6">
-        {activeTab === 'overview' && <Overview kpi={kpi} series={series} />}
-        {activeTab === 'projects' && <ProjectsTable projects={filteredProjects} />}
-        {activeTab === 'team' && <TeamPerformance teamMembers={filteredTeamMembers} />}
-        {activeTab === 'alerts' && <Alerts alerts={allAlerts} />}
+        {activeTab === 'overview' && (
+          <Overview
+            kpi={kpi}
+            series={series}
+            loading={{ kpi: loading.kpi, series: loading.series }}
+            errors={{ kpi: errors.kpi, series: errors.series }}
+            onRetry={{ kpi: fetchKpi, series: fetchSeries }}
+          />
+        )}
+        {activeTab === 'projects' && (
+          <ProjectsTable
+            projects={filteredProjects}
+            loading={loading.projects}
+            error={errors.projects}
+            onRetry={fetchProjects}
+          />
+        )}
+        {activeTab === 'team' && (
+          <TeamPerformance
+            teamMembers={filteredTeamMembers}
+            loading={loading.team}
+            error={errors.team}
+            onRetry={fetchTeam}
+          />
+        )}
+        {activeTab === 'alerts' && (
+          <Alerts
+            alerts={allAlerts}
+            loading={loading.alerts}
+            error={errors.alerts}
+            onRetry={fetchAlerts}
+          />
+        )}
       </main>
     </div>
   );
