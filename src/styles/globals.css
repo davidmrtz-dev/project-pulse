@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Opcional: tokens ligeros */
+:root {
+  --brand:#0D47A1;
+}
