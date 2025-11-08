@@ -97,6 +97,11 @@ interface AppState {
   fetchProjectStatus: () => Promise<void>;
   fetchTeamWorkload: () => Promise<void>;
   fetchAll: () => Promise<void>;
+  
+  // CRUD actions for projects
+  createProject: (project: Omit<Project, 'id'>) => Promise<Project>;
+  updateProject: (id: string, project: Partial<Project>) => Promise<Project>;
+  deleteProject: (id: string) => Promise<void>;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -421,6 +426,96 @@ export const useStore = create<AppState>((set, get) => ({
       fetchProjectStatus(),
       fetchTeamWorkload(),
     ]);
+  },
+  
+  // CRUD actions for projects
+  createProject: async (projectData) => {
+    set((state) => ({
+      loading: { ...state.loading, projects: true },
+      errors: { ...state.errors, projects: null },
+    }));
+    try {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(projectData),
+      });
+      if (!response.ok) throw new Error('Failed to create project');
+      const newProject = await response.json();
+      set((state) => ({
+        projects: [...state.projects, newProject],
+      }));
+      // Refresh projects list
+      await get().fetchProjects();
+      return newProject;
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'Unknown error' },
+      }));
+      throw error;
+    } finally {
+      set((state) => ({
+        loading: { ...state.loading, projects: false },
+      }));
+    }
+  },
+  
+  updateProject: async (id, projectData) => {
+    set((state) => ({
+      loading: { ...state.loading, projects: true },
+      errors: { ...state.errors, projects: null },
+    }));
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(projectData),
+      });
+      if (!response.ok) throw new Error('Failed to update project');
+      const updatedProject = await response.json();
+      set((state) => ({
+        projects: state.projects.map((p) => (p.id === id ? updatedProject : p)),
+      }));
+      // Refresh projects list
+      await get().fetchProjects();
+      return updatedProject;
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'Unknown error' },
+      }));
+      throw error;
+    } finally {
+      set((state) => ({
+        loading: { ...state.loading, projects: false },
+      }));
+    }
+  },
+  
+  deleteProject: async (id) => {
+    set((state) => ({
+      loading: { ...state.loading, projects: true },
+      errors: { ...state.errors, projects: null },
+    }));
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete project');
+      set((state) => ({
+        projects: state.projects.filter((p) => p.id !== id),
+      }));
+      // Refresh projects list
+      await get().fetchProjects();
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'Unknown error' },
+      }));
+      throw error;
+    } finally {
+      set((state) => ({
+        loading: { ...state.loading, projects: false },
+      }));
+    }
   },
 }));
 

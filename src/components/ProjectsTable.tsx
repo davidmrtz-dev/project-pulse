@@ -7,20 +7,16 @@ import {
   createColumnHelper,
   flexRender,
 } from '@tanstack/react-table';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useI18n } from '../i18n/I18nProvider';
+import { useStore } from '../store/useStore';
+import { useNotifications } from '../lib/notifications';
 import { SkeletonTableRow } from './Loading';
 import { ErrorCard } from './Error';
-
-type Project = {
-  id: string;
-  name: string;
-  owner: string;
-  progress: number;
-  status: 'on-track' | 'delayed' | 'blocked';
-  estimatedDate: string;
-  priority: 'high' | 'medium' | 'low';
-};
+import { ProjectFormModal } from './modals/ProjectFormModal';
+import { ConfirmDeleteModal } from './modals/ConfirmDeleteModal';
+import type { Project } from '../types';
 
 const columnHelper = createColumnHelper<Project>();
 
@@ -46,8 +42,14 @@ type ProjectsTableProps = {
 export function ProjectsTable({ projects, loading, error, onRetry }: ProjectsTableProps) {
   const { isDark } = useDarkMode();
   const { t } = useI18n();
+  const { deleteProject } = useStore();
+  const { addToast } = useNotifications();
   const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   if (error) {
     return (
@@ -63,6 +65,43 @@ export function ProjectsTable({ projects, loading, error, onRetry }: ProjectsTab
       </div>
     );
   }
+
+  const handleCreate = () => {
+    setSelectedProject(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleEdit = (project: Project) => {
+    setSelectedProject(project);
+    setIsFormModalOpen(true);
+  };
+
+  const handleDeleteClick = (project: Project) => {
+    setSelectedProject(project);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedProject) return;
+    
+    setDeleting(true);
+    try {
+      await deleteProject(selectedProject.id);
+      addToast({
+        type: 'success',
+        message: t('projects.messages.deleted'),
+      });
+      setIsDeleteModalOpen(false);
+      setSelectedProject(null);
+    } catch (error) {
+      addToast({
+        type: 'error',
+        message: error instanceof Error ? error.message : t('common.error'),
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -129,8 +168,33 @@ export function ProjectsTable({ projects, loading, error, onRetry }: ProjectsTab
           </span>
         ),
       }),
+      columnHelper.display({
+        id: 'actions',
+        header: t('projects.columns.actions'),
+        cell: (info) => {
+          const project = info.row.original;
+          return (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleEdit(project)}
+                className="p-1.5 rounded-lg hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors text-text-secondary dark:text-text-secondary-dark hover:text-primary dark:hover:text-primary-dark"
+                aria-label={t('common.edit')}
+              >
+                <Edit className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleDeleteClick(project)}
+                className="p-1.5 rounded-lg hover:bg-error/10 dark:hover:bg-error-dark/10 transition-colors text-text-secondary dark:text-text-secondary-dark hover:text-error dark:hover:text-error-dark"
+                aria-label={t('common.delete')}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          );
+        },
+      }),
     ],
-    [isDark, t]
+    [isDark, t, handleEdit, handleDeleteClick]
   );
 
   const table = useReactTable({
@@ -149,17 +213,26 @@ export function ProjectsTable({ projects, loading, error, onRetry }: ProjectsTab
 
   return (
     <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm border border-border dark:border-border-dark overflow-hidden">
-      <div className="p-4 border-b border-border dark:border-border-dark flex items-center justify-between">
+      <div className="p-4 border-b border-border dark:border-border-dark flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold text-text-primary dark:text-text-primary-dark">
           {t('projects.title')}
         </h2>
-        <input
-          type="text"
-          placeholder={t('projects.searchPlaceholder')}
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="px-3 py-1.5 text-sm rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark placeholder:text-text-secondary dark:placeholder:text-text-secondary-dark focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"
-        />
+        <div className="flex items-center gap-2 flex-1 max-w-md">
+          <input
+            type="text"
+            placeholder={t('projects.searchPlaceholder')}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark placeholder:text-text-secondary dark:placeholder:text-text-secondary-dark focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"
+          />
+          <button
+            onClick={handleCreate}
+            className="flex items-center gap-2 px-4 py-1.5 text-sm rounded-lg bg-primary dark:bg-primary-dark text-white hover:opacity-90 transition-opacity"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">{t('projects.addProject')}</span>
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -199,7 +272,7 @@ export function ProjectsTable({ projects, loading, error, onRetry }: ProjectsTab
               </>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-text-secondary dark:text-text-secondary-dark">
+                <td colSpan={7} className="px-4 py-8 text-center text-text-secondary dark:text-text-secondary-dark">
                   {t('common.noData')}
                 </td>
               </tr>
@@ -220,6 +293,28 @@ export function ProjectsTable({ projects, loading, error, onRetry }: ProjectsTab
           </tbody>
         </table>
       </div>
+
+      {/* Modals */}
+      <ProjectFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => {
+          setIsFormModalOpen(false);
+          setSelectedProject(null);
+        }}
+        project={selectedProject}
+      />
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedProject(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title={t('projects.deleteTitle')}
+        message={t('projects.deleteMessage')}
+        itemName={selectedProject?.name}
+        loading={deleting}
+      />
     </div>
   );
 }

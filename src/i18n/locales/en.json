@@ -10,6 +10,11 @@
     "error": "An error occurred while loading data",
     "retry": "Retry",
     "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
     "export": "Export",
     "exportCSV": "Export to CSV",
     "exportProjects": "Export Projects",
@@ -49,13 +54,27 @@
   "projects": {
     "title": "Active Projects",
     "searchPlaceholder": "Search projects...",
+    "addProject": "Add Project",
+    "createTitle": "Create New Project",
+    "editTitle": "Edit Project",
+    "deleteTitle": "Delete Project",
+    "deleteMessage": "Are you sure you want to delete this project? This action cannot be undone.",
+    "startDate": "Start Date",
+    "tasksTotal": "Total Tasks",
+    "tasksCompleted": "Completed Tasks",
     "columns": {
       "name": "Project Name",
       "owner": "Owner",
       "progress": "Progress",
       "status": "Status",
       "priority": "Priority",
-      "estimatedDate": "Estimated Date"
+      "estimatedDate": "Estimated Date",
+      "actions": "Actions"
+    },
+    "messages": {
+      "created": "Project created successfully",
+      "updated": "Project updated successfully",
+      "deleted": "Project deleted successfully"
     },
     "status": {
       "on-track": "On Track",

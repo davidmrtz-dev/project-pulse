@@ -8,6 +8,7 @@ import { ProjectsTable } from './components/ProjectsTable';
 import { TeamPerformance } from './components/TeamPerformance';
 import { Alerts } from './components/Alerts';
 import { Filters } from './components/Filters';
+import { ToastContainer } from './components/Toast';
 import {
   exportProjectsToCSV,
   exportTeamMembersToCSV,
@@ -408,6 +409,7 @@ export default function App() {
           />
         )}
       </main>
+      <ToastContainer />
     </div>
   );
 }

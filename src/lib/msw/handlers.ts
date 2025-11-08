@@ -69,7 +69,8 @@ const teamWorkload = [
   { name: 'James Brown', activeTasks: 10, completedThisWeek: 7 },
 ];
 
-const projects = [
+// Mutable projects array for CRUD operations
+let projects = [
   { id: '1', name: 'E-commerce Platform', owner: 'Sarah Chen', progress: 78, status: 'on-track', estimatedDate: '2024-03-15', priority: 'high', tasksCompleted: 156, tasksTotal: 200, startDate: '2024-01-10' },
   { id: '2', name: 'Mobile App Redesign', owner: 'Marcus Johnson', progress: 45, status: 'delayed', estimatedDate: '2024-04-20', priority: 'medium', tasksCompleted: 90, tasksTotal: 200, startDate: '2024-02-01' },
   { id: '3', name: 'API Integration', owner: 'Emma Wilson', progress: 92, status: 'on-track', estimatedDate: '2024-02-28', priority: 'high', tasksCompleted: 184, tasksTotal: 200, startDate: '2023-12-15' },
@@ -77,6 +78,12 @@ const projects = [
   { id: '5', name: 'Security Audit', owner: 'Lisa Anderson', progress: 67, status: 'on-track', estimatedDate: '2024-03-30', priority: 'high', tasksCompleted: 134, tasksTotal: 200, startDate: '2024-01-05' },
   { id: '6', name: 'Content Migration', owner: 'James Brown', progress: 23, status: 'delayed', estimatedDate: '2024-06-15', priority: 'medium', tasksCompleted: 46, tasksTotal: 200, startDate: '2024-03-01' },
 ];
+
+// Helper to generate next ID
+function getNextProjectId(): string {
+  const maxId = Math.max(...projects.map(p => parseInt(p.id) || 0), 0);
+  return String(maxId + 1);
+}
 
 const teamMembers = [
   { id: '1', name: 'Sarah Chen', velocity: 28, onTimeRate: 0.94, weeklyProductivity: 32, activeProjects: 2 },
@@ -107,7 +114,48 @@ export const handlers = [
     const period = url.searchParams.get('period') || 'current';
     return HttpResponse.json(period === 'previous' ? previousSeries : demoSeries);
   }),
+  // Projects CRUD
   http.get('/api/projects', () => HttpResponse.json(projects)),
+  http.post('/api/projects', async ({ request }) => {
+    const body = await request.json() as any;
+    const newProject = {
+      id: getNextProjectId(),
+      name: body.name,
+      owner: body.owner,
+      progress: body.progress ?? 0,
+      status: body.status ?? 'on-track',
+      estimatedDate: body.estimatedDate,
+      priority: body.priority ?? 'medium',
+      tasksCompleted: body.tasksCompleted ?? 0,
+      tasksTotal: body.tasksTotal ?? 0,
+      startDate: body.startDate ?? new Date().toISOString().split('T')[0],
+    };
+    projects.push(newProject);
+    return HttpResponse.json(newProject, { status: 201 });
+  }),
+  http.put('/api/projects/:id', async ({ request, params }) => {
+    const { id } = params;
+    const body = await request.json() as any;
+    const index = projects.findIndex(p => p.id === id);
+    
+    if (index === -1) {
+      return HttpResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+    
+    projects[index] = { ...projects[index], ...body, id: String(id) };
+    return HttpResponse.json(projects[index]);
+  }),
+  http.delete('/api/projects/:id', ({ params }) => {
+    const { id } = params;
+    const index = projects.findIndex(p => p.id === id);
+    
+    if (index === -1) {
+      return HttpResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+    
+    projects.splice(index, 1);
+    return HttpResponse.json({ success: true });
+  }),
   http.get('/api/team', () => HttpResponse.json(teamMembers)),
   http.get('/api/alerts', () => HttpResponse.json(alerts)),
   http.get('/api/weekly-trends', ({ request }) => {

@@ -10,6 +10,11 @@
     "error": "Ocurrió un error al cargar los datos",
     "retry": "Reintentar",
     "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "create": "Crear",
+    "edit": "Editar",
+    "delete": "Eliminar",
     "export": "Exportar",
     "exportCSV": "Exportar a CSV",
     "exportProjects": "Exportar Proyectos",
@@ -49,13 +54,27 @@
   "projects": {
     "title": "Proyectos Activos",
     "searchPlaceholder": "Buscar proyectos...",
+    "addProject": "Agregar Proyecto",
+    "createTitle": "Crear Nuevo Proyecto",
+    "editTitle": "Editar Proyecto",
+    "deleteTitle": "Eliminar Proyecto",
+    "deleteMessage": "¿Estás seguro de que deseas eliminar este proyecto? Esta acción no se puede deshacer.",
+    "startDate": "Fecha de Inicio",
+    "tasksTotal": "Tareas Totales",
+    "tasksCompleted": "Tareas Completadas",
     "columns": {
       "name": "Nombre del Proyecto",
       "owner": "Responsable",
       "progress": "Progreso",
       "status": "Estado",
       "priority": "Prioridad",
-      "estimatedDate": "Fecha Estimada"
+      "estimatedDate": "Fecha Estimada",
+      "actions": "Acciones"
+    },
+    "messages": {
+      "created": "Proyecto creado exitosamente",
+      "updated": "Proyecto actualizado exitosamente",
+      "deleted": "Proyecto eliminado exitosamente"
     },
     "status": {
       "on-track": "En Curso",
