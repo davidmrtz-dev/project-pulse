@@ -2,7 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Opcional: tokens ligeros */
+/* Light Mode Variables */
 :root {
-  --brand:#0D47A1;
+  --color-primary: #0D47A1;
+  --color-secondary: #42A5F5;
+  --color-success: #00C896;
+  --color-warning: #FFC107;
+  --color-error: #EF5350;
+  --color-text-primary: #1E1E1E;
+  --color-text-secondary: #555555;
+  --color-bg-base: #F8F9FA;
+  --color-bg-panel: #FFFFFF;
+  --color-border: #E0E0E0;
+}
+
+/* Dark Mode Variables */
+.dark {
+  --color-primary: #1565C0;
+  --color-secondary: #64B5F6;
+  --color-success: #00E5A0;
+  --color-warning: #FFD54F;
+  --color-error: #FF6F61;
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #B0BEC5;
+  --color-bg-base: #0A1929;
+  --color-bg-panel: #132F4C;
+  --color-border: #1E3A5F;
+}
+
+/* Base styles */
+@layer base {
+  body {
+    @apply bg-bg-base text-text-primary transition-colors duration-200;
+  }
 }
