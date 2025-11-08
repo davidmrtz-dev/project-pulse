@@ -10,22 +10,16 @@ type FilterState = {
 };
 
 type FiltersProps = {
+  filters: FilterState;
   onFilterChange: (filters: FilterState) => void;
 };
 
-export function Filters({ onFilterChange }: FiltersProps) {
+export function Filters({ filters, onFilterChange }: FiltersProps) {
   const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({
-    dateRange: 'all',
-    team: 'all',
-    status: 'all',
-    priority: 'all',
-  });
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
     onFilterChange(newFilters);
   };
 
@@ -36,7 +30,6 @@ export function Filters({ onFilterChange }: FiltersProps) {
       status: 'all',
       priority: 'all',
     };
-    setFilters(cleared);
     onFilterChange(cleared);
   };
 

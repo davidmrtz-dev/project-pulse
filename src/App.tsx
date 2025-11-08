@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages } from 'lucide-react';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useI18n } from './i18n/I18nProvider';
@@ -35,13 +35,26 @@ type Alert = {
 
 type Tab = 'overview' | 'projects' | 'team' | 'alerts';
 
+type FilterState = {
+  dateRange: string;
+  team: string;
+  status: string;
+  priority: string;
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [kpi, setKpi] = useState<KPI | null>(null);
   const [series, setSeries] = useState<Point[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
+  const [allTeamMembers, setAllTeamMembers] = useState<TeamMember[]>([]);
+  const [allAlerts, setAllAlerts] = useState<Alert[]>([]);
+  const [filters, setFilters] = useState<FilterState>({
+    dateRange: 'all',
+    team: 'all',
+    status: 'all',
+    priority: 'all',
+  });
   const { isDark, toggle } = useDarkMode();
   const { t, language, setLanguage } = useI18n();
   const [showLangMenu, setShowLangMenu] = useState(false);
@@ -49,14 +62,90 @@ export default function App() {
   useEffect(() => {
     fetch('/api/kpis').then((r) => r.json()).then(setKpi);
     fetch('/api/series').then((r) => r.json()).then(setSeries);
-    fetch('/api/projects').then((r) => r.json()).then(setProjects);
-    fetch('/api/team').then((r) => r.json()).then(setTeamMembers);
-    fetch('/api/alerts').then((r) => r.json()).then(setAlerts);
+    fetch('/api/projects').then((r) => r.json()).then(setAllProjects);
+    fetch('/api/team').then((r) => r.json()).then(setAllTeamMembers);
+    fetch('/api/alerts').then((r) => r.json()).then(setAllAlerts);
   }, []);
 
-  const handleFilterChange = (filters: any) => {
-    // Filter logic would go here
-    console.log('Filters changed:', filters);
+  // Filter projects based on filter state
+  const filteredProjects = useMemo(() => {
+    let filtered = [...allProjects];
+
+    // Filter by status
+    if (filters.status !== 'all') {
+      filtered = filtered.filter((p) => p.status === filters.status);
+    }
+
+    // Filter by priority
+    if (filters.priority !== 'all') {
+      filtered = filtered.filter((p) => p.priority === filters.priority);
+    }
+
+    // Filter by team member (owner)
+    if (filters.team !== 'all') {
+      const teamMap: Record<string, string> = {
+        sarah: 'Sarah Chen',
+        marcus: 'Marcus Johnson',
+        emma: 'Emma Wilson',
+        david: 'David Martinez',
+        lisa: 'Lisa Anderson',
+        james: 'James Brown',
+      };
+      const ownerName = teamMap[filters.team];
+      if (ownerName) {
+        filtered = filtered.filter((p) => p.owner === ownerName);
+      }
+    }
+
+    // Filter by date range
+    if (filters.dateRange !== 'all') {
+      const now = new Date();
+      let cutoffDate = new Date();
+
+      switch (filters.dateRange) {
+        case 'week':
+          cutoffDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          cutoffDate.setMonth(now.getMonth() - 1);
+          break;
+        case 'quarter':
+          cutoffDate.setMonth(now.getMonth() - 3);
+          break;
+        case 'year':
+          cutoffDate.setFullYear(now.getFullYear() - 1);
+          break;
+      }
+
+      filtered = filtered.filter((p) => {
+        const projectDate = new Date(p.estimatedDate);
+        return projectDate >= cutoffDate;
+      });
+    }
+
+    return filtered;
+  }, [allProjects, filters]);
+
+  // Filter team members
+  const filteredTeamMembers = useMemo(() => {
+    if (filters.team === 'all') return allTeamMembers;
+
+    const teamMap: Record<string, string> = {
+      sarah: 'Sarah Chen',
+      marcus: 'Marcus Johnson',
+      emma: 'Emma Wilson',
+      david: 'David Martinez',
+      lisa: 'Lisa Anderson',
+      james: 'James Brown',
+    };
+    const memberName = teamMap[filters.team];
+    if (!memberName) return allTeamMembers;
+
+    return allTeamMembers.filter((m) => m.name === memberName);
+  }, [allTeamMembers, filters.team]);
+
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
   };
 
   const tabs = [
@@ -75,7 +164,7 @@ export default function App() {
               Project Pulse
             </h1>
             <div className="flex items-center gap-2">
-              <Filters onFilterChange={handleFilterChange} />
+              <Filters filters={filters} onFilterChange={handleFilterChange} />
               <div className="text-sm text-text-secondary dark:text-text-secondary-dark hidden sm:block">
                 {t('common.demo')}
               </div>
@@ -170,9 +259,9 @@ export default function App() {
 
       <main className="mx-auto max-w-7xl px-4 py-6">
         {activeTab === 'overview' && <Overview kpi={kpi} series={series} />}
-        {activeTab === 'projects' && <ProjectsTable projects={projects} />}
-        {activeTab === 'team' && <TeamPerformance teamMembers={teamMembers} />}
-        {activeTab === 'alerts' && <Alerts alerts={alerts} />}
+        {activeTab === 'projects' && <ProjectsTable projects={filteredProjects} />}
+        {activeTab === 'team' && <TeamPerformance teamMembers={filteredTeamMembers} />}
+        {activeTab === 'alerts' && <Alerts alerts={allAlerts} />}
       </main>
     </div>
   );
