@@ -193,7 +193,10 @@ export default function App() {
               Project Pulse
             </h1>
             <div className="flex items-center gap-2">
-              <Filters filters={filters} onFilterChange={handleFilterChange} />
+              {/* Only show filters in tabs where they work: projects and team */}
+              {(activeTab === 'projects' || activeTab === 'team') && (
+                <Filters filters={filters} onFilterChange={handleFilterChange} />
+              )}
               <div className="text-sm text-text-secondary dark:text-text-secondary-dark hidden sm:block">
                 {t('common.demo')}
               </div>
