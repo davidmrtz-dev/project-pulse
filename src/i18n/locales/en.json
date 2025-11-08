@@ -8,7 +8,8 @@
     "loading": "Loading...",
     "noData": "No data available",
     "error": "An error occurred while loading data",
-    "retry": "Retry"
+    "retry": "Retry",
+    "close": "Close"
   },
   "tabs": {
     "overview": "Overview",
@@ -18,6 +19,7 @@
   },
   "overview": {
     "title": "Overview",
+    "comparePeriod": "Compare with Previous Period",
     "kpis": {
       "throughput": "Throughput",
       "cycleTime": "Cycle Time",
@@ -33,7 +35,9 @@
       "weeklyTrends": "Weekly Trends",
       "taskStatus": "Task Status Distribution",
       "projectStatus": "Project Status Breakdown",
-      "teamWorkload": "Team Workload"
+      "teamWorkload": "Team Workload",
+      "currentPeriod": "Current Period",
+      "previousPeriod": "Previous Period"
     }
   },
   "projects": {
@@ -113,6 +117,25 @@
     "minutesAgo": "m ago",
     "hoursAgo": "h ago",
     "daysAgo": "d ago"
+  },
+  "drillDown": {
+    "details": "Details",
+    "month": "Month {month}",
+    "week": "Week {week}",
+    "monthInfo": "This data represents the monthly performance metrics for the selected period.",
+    "weekInfo": "This data represents the weekly performance metrics for the selected period.",
+    "velocity": {
+      "title": "Velocity Details - Month {month}"
+    },
+    "completion": {
+      "title": "Completion Rate Details - Month {month}"
+    },
+    "backlog": {
+      "title": "Backlog Growth Details - Month {month}"
+    },
+    "weekly": {
+      "title": "Weekly Trends Details - Week {week}"
+    }
   }
 }
 

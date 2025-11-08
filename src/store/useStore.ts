@@ -23,11 +23,14 @@ interface AppState {
   // Data
   kpi: KPI | null;
   series: Point[];
+  previousSeries: Point[];
   projects: Project[];
   teamMembers: TeamMember[];
   alerts: Alert[];
   weeklyTrends: WeeklyTrend[];
+  previousWeeklyTrends: WeeklyTrend[];
   backlogGrowth: BacklogData[];
+  previousBacklogGrowth: BacklogData[];
   taskStatus: TaskStatus[];
   projectStatus: ProjectStatus[];
   teamWorkload: TeamWorkload[];
@@ -35,6 +38,7 @@ interface AppState {
   // UI State
   activeTab: 'overview' | 'projects' | 'team' | 'alerts';
   filters: FilterState;
+  comparePeriod: boolean; // Enable/disable period comparison
   
   // Loading states
   loading: {
@@ -77,17 +81,18 @@ interface AppState {
   setTeamWorkload: (data: TeamWorkload[]) => void;
   setActiveTab: (tab: 'overview' | 'projects' | 'team' | 'alerts') => void;
   setFilters: (filters: FilterState) => void;
+  setComparePeriod: (comparePeriod: boolean) => void;
   setLoading: (key: keyof AppState['loading'], value: boolean) => void;
   setError: (key: keyof AppState['errors'], error: string | null) => void;
   
   // Fetch actions
   fetchKpi: () => Promise<void>;
-  fetchSeries: () => Promise<void>;
+  fetchSeries: (period?: 'current' | 'previous') => Promise<void>;
   fetchProjects: () => Promise<void>;
   fetchTeam: () => Promise<void>;
   fetchAlerts: () => Promise<void>;
-  fetchWeeklyTrends: () => Promise<void>;
-  fetchBacklogGrowth: () => Promise<void>;
+  fetchWeeklyTrends: (period?: 'current' | 'previous') => Promise<void>;
+  fetchBacklogGrowth: (period?: 'current' | 'previous') => Promise<void>;
   fetchTaskStatus: () => Promise<void>;
   fetchProjectStatus: () => Promise<void>;
   fetchTeamWorkload: () => Promise<void>;
@@ -98,11 +103,14 @@ export const useStore = create<AppState>((set, get) => ({
   // Initial state
   kpi: null,
   series: [],
+  previousSeries: [],
   projects: [],
   teamMembers: [],
   alerts: [],
   weeklyTrends: [],
+  previousWeeklyTrends: [],
   backlogGrowth: [],
+  previousBacklogGrowth: [],
   taskStatus: [],
   projectStatus: [],
   teamWorkload: [],
@@ -113,6 +121,7 @@ export const useStore = create<AppState>((set, get) => ({
     status: 'all',
     priority: 'all',
   },
+  comparePeriod: false,
   loading: {
     kpi: false,
     series: false,
@@ -141,16 +150,20 @@ export const useStore = create<AppState>((set, get) => ({
   // Setters
   setKpi: (kpi) => set({ kpi }),
   setSeries: (series) => set({ series }),
+  setPreviousSeries: (previousSeries: Point[]) => set({ previousSeries }),
   setProjects: (projects) => set({ projects }),
   setTeamMembers: (teamMembers) => set({ teamMembers }),
   setAlerts: (alerts) => set({ alerts }),
-  setWeeklyTrends: (weeklyTrends) => set({ weeklyTrends }),
-  setBacklogGrowth: (backlogGrowth) => set({ backlogGrowth }),
-  setTaskStatus: (taskStatus) => set({ taskStatus }),
-  setProjectStatus: (projectStatus) => set({ projectStatus }),
-  setTeamWorkload: (teamWorkload) => set({ teamWorkload }),
+  setWeeklyTrends: (weeklyTrends: WeeklyTrend[]) => set({ weeklyTrends }),
+  setPreviousWeeklyTrends: (previousWeeklyTrends: WeeklyTrend[]) => set({ previousWeeklyTrends }),
+  setBacklogGrowth: (backlogGrowth: BacklogData[]) => set({ backlogGrowth }),
+  setPreviousBacklogGrowth: (previousBacklogGrowth: BacklogData[]) => set({ previousBacklogGrowth }),
+  setTaskStatus: (taskStatus: TaskStatus[]) => set({ taskStatus }),
+  setProjectStatus: (projectStatus: ProjectStatus[]) => set({ projectStatus }),
+  setTeamWorkload: (teamWorkload: TeamWorkload[]) => set({ teamWorkload }),
   setActiveTab: (activeTab) => set({ activeTab }),
-  setFilters: (filters) => set({ filters }),
+  setFilters: (filters: FilterState) => set({ filters }),
+  setComparePeriod: (comparePeriod: boolean) => set({ comparePeriod }),
   setLoading: (key, value) =>
     set((state) => ({
       loading: { ...state.loading, [key]: value },
@@ -182,16 +195,20 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
   
-  fetchSeries: async () => {
+  fetchSeries: async (period: 'current' | 'previous' = 'current') => {
     set((state) => ({
       loading: { ...state.loading, series: true },
       errors: { ...state.errors, series: null },
     }));
     try {
-      const response = await fetch('/api/series');
+      const response = await fetch(`/api/series?period=${period}`);
       if (!response.ok) throw new Error('Failed to fetch series');
       const data = await response.json();
-      set({ series: data });
+      if (period === 'previous') {
+        set({ previousSeries: data });
+      } else {
+        set({ series: data });
+      }
     } catch (error) {
       set((state) => ({
         errors: { ...state.errors, series: error instanceof Error ? error.message : 'Unknown error' },
@@ -266,16 +283,20 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
   
-  fetchWeeklyTrends: async () => {
+  fetchWeeklyTrends: async (period: 'current' | 'previous' = 'current') => {
     set((state) => ({
       loading: { ...state.loading, weeklyTrends: true },
       errors: { ...state.errors, weeklyTrends: null },
     }));
     try {
-      const response = await fetch('/api/weekly-trends');
+      const response = await fetch(`/api/weekly-trends?period=${period}`);
       if (!response.ok) throw new Error('Failed to fetch weekly trends');
       const data = await response.json();
-      set({ weeklyTrends: data });
+      if (period === 'previous') {
+        set({ previousWeeklyTrends: data });
+      } else {
+        set({ weeklyTrends: data });
+      }
     } catch (error) {
       set((state) => ({
         errors: { ...state.errors, weeklyTrends: error instanceof Error ? error.message : 'Unknown error' },
@@ -287,16 +308,20 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
   
-  fetchBacklogGrowth: async () => {
+  fetchBacklogGrowth: async (period: 'current' | 'previous' = 'current') => {
     set((state) => ({
       loading: { ...state.loading, backlogGrowth: true },
       errors: { ...state.errors, backlogGrowth: null },
     }));
     try {
-      const response = await fetch('/api/backlog-growth');
+      const response = await fetch(`/api/backlog-growth?period=${period}`);
       if (!response.ok) throw new Error('Failed to fetch backlog growth');
       const data = await response.json();
-      set({ backlogGrowth: data });
+      if (period === 'previous') {
+        set({ previousBacklogGrowth: data });
+      } else {
+        set({ backlogGrowth: data });
+      }
     } catch (error) {
       set((state) => ({
         errors: { ...state.errors, backlogGrowth: error instanceof Error ? error.message : 'Unknown error' },

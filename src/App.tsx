@@ -13,20 +13,25 @@ export default function App() {
   const {
     kpi,
     series,
+    previousSeries,
     projects: allProjects,
     teamMembers: allTeamMembers,
     alerts: allAlerts,
     weeklyTrends,
+    previousWeeklyTrends,
     backlogGrowth,
+    previousBacklogGrowth,
     taskStatus,
     projectStatus,
     teamWorkload,
     activeTab,
     filters,
+    comparePeriod,
     loading,
     errors,
     setActiveTab,
     setFilters,
+    setComparePeriod,
     fetchAll,
     fetchKpi,
     fetchSeries,
@@ -46,7 +51,17 @@ export default function App() {
 
   useEffect(() => {
     fetchAll();
-  }, [fetchAll]);
+  }, []); // fetchAll is stable from Zustand, no need to include in deps
+
+  // Memoize fetch previous functions to avoid recreating them on every render
+  const handleFetchPrevious = useMemo(
+    () => ({
+      series: () => fetchSeries('previous'),
+      weeklyTrends: () => fetchWeeklyTrends('previous'),
+      backlogGrowth: () => fetchBacklogGrowth('previous'),
+    }),
+    [fetchSeries, fetchWeeklyTrends, fetchBacklogGrowth]
+  );
 
   // Filter projects based on filter state
   const filteredProjects = useMemo(() => {
@@ -243,11 +258,16 @@ export default function App() {
           <Overview
             kpi={kpi}
             series={series}
+            previousSeries={previousSeries}
             weeklyTrends={weeklyTrends}
+            previousWeeklyTrends={previousWeeklyTrends}
             backlogGrowth={backlogGrowth}
+            previousBacklogGrowth={previousBacklogGrowth}
             taskStatus={taskStatus}
             projectStatus={projectStatus}
             teamWorkload={teamWorkload}
+            comparePeriod={comparePeriod}
+            onCompareToggle={setComparePeriod}
             loading={{
               kpi: loading.kpi,
               series: loading.series,
@@ -275,6 +295,7 @@ export default function App() {
               projectStatus: fetchProjectStatus,
               teamWorkload: fetchTeamWorkload,
             }}
+            onFetchPrevious={handleFetchPrevious}
           />
         )}
         {activeTab === 'projects' && (

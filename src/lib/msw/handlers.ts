@@ -1,13 +1,20 @@
 import { http, HttpResponse } from 'msw';
 
-// Monthly series data
+// Monthly series data (current period - last 12 months)
 const demoSeries = Array.from({ length: 12 }, (_, i) => ({
   month: i + 1,
   velocity: Math.round(60 + Math.random() * 25),
   completion: Math.round(50 + Math.random() * 40),
 }));
 
-// Weekly trends (last 12 weeks)
+// Previous period series data (12 months before)
+const previousSeries = Array.from({ length: 12 }, (_, i) => ({
+  month: i + 1,
+  velocity: Math.round(55 + Math.random() * 20),
+  completion: Math.round(45 + Math.random() * 35),
+}));
+
+// Weekly trends (last 12 weeks - current period)
 const weeklyTrends = Array.from({ length: 12 }, (_, i) => ({
   week: i + 1,
   completed: Math.round(20 + Math.random() * 15),
@@ -15,11 +22,26 @@ const weeklyTrends = Array.from({ length: 12 }, (_, i) => ({
   blocked: Math.round(2 + Math.random() * 5),
 }));
 
-// Backlog growth over time
+// Previous period weekly trends
+const previousWeeklyTrends = Array.from({ length: 12 }, (_, i) => ({
+  week: i + 1,
+  completed: Math.round(18 + Math.random() * 12),
+  inProgress: Math.round(13 + Math.random() * 8),
+  blocked: Math.round(2 + Math.random() * 4),
+}));
+
+// Backlog growth over time (current period)
 const backlogGrowth = Array.from({ length: 12 }, (_, i) => ({
   month: i + 1,
   backlog: Math.round(80 + Math.random() * 40 - i * 2),
   completed: Math.round(60 + Math.random() * 30),
+}));
+
+// Previous period backlog growth
+const previousBacklogGrowth = Array.from({ length: 12 }, (_, i) => ({
+  month: i + 1,
+  backlog: Math.round(85 + Math.random() * 35 - i * 1.5),
+  completed: Math.round(55 + Math.random() * 25),
 }));
 
 // Task status distribution
@@ -80,12 +102,24 @@ export const handlers = [
     totalTasks: 610,
     completedTasks: 478,
   })),
-  http.get('/api/series', () => HttpResponse.json(demoSeries)),
+  http.get('/api/series', ({ request }) => {
+    const url = new URL(request.url);
+    const period = url.searchParams.get('period') || 'current';
+    return HttpResponse.json(period === 'previous' ? previousSeries : demoSeries);
+  }),
   http.get('/api/projects', () => HttpResponse.json(projects)),
   http.get('/api/team', () => HttpResponse.json(teamMembers)),
   http.get('/api/alerts', () => HttpResponse.json(alerts)),
-  http.get('/api/weekly-trends', () => HttpResponse.json(weeklyTrends)),
-  http.get('/api/backlog-growth', () => HttpResponse.json(backlogGrowth)),
+  http.get('/api/weekly-trends', ({ request }) => {
+    const url = new URL(request.url);
+    const period = url.searchParams.get('period') || 'current';
+    return HttpResponse.json(period === 'previous' ? previousWeeklyTrends : weeklyTrends);
+  }),
+  http.get('/api/backlog-growth', ({ request }) => {
+    const url = new URL(request.url);
+    const period = url.searchParams.get('period') || 'current';
+    return HttpResponse.json(period === 'previous' ? previousBacklogGrowth : backlogGrowth);
+  }),
   http.get('/api/task-status', () => HttpResponse.json(taskStatusDistribution)),
   http.get('/api/project-status', () => HttpResponse.json(projectStatusBreakdown)),
   http.get('/api/team-workload', () => HttpResponse.json(teamWorkload)),

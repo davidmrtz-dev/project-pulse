@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useI18n } from '../i18n/I18nProvider';
@@ -8,6 +9,8 @@ import { WeeklyTrendsChart } from './charts/WeeklyTrendsChart';
 import { TaskStatusChart } from './charts/TaskStatusChart';
 import { ProjectStatusChart } from './charts/ProjectStatusChart';
 import { TeamWorkloadChart } from './charts/TeamWorkloadChart';
+import { DrillDownModal } from './DrillDownModal';
+import { TrendingUp } from 'lucide-react';
 import type { KPI, Point, BacklogData, WeeklyTrend, TaskStatus, ProjectStatus, TeamWorkload } from '../types';
 
 function KpiCard({ label, value, suffix }: { label: string; value: string | number; suffix?: string }) {
@@ -24,11 +27,16 @@ function KpiCard({ label, value, suffix }: { label: string; value: string | numb
 type OverviewProps = {
   kpi: KPI | null;
   series: Point[];
+  previousSeries: Point[];
   weeklyTrends: WeeklyTrend[];
+  previousWeeklyTrends: WeeklyTrend[];
   backlogGrowth: BacklogData[];
+  previousBacklogGrowth: BacklogData[];
   taskStatus: TaskStatus[];
   projectStatus: ProjectStatus[];
   teamWorkload: TeamWorkload[];
+  comparePeriod: boolean;
+  onCompareToggle: (enabled: boolean) => void;
   loading?: {
     kpi: boolean;
     series: boolean;
@@ -56,22 +64,128 @@ type OverviewProps = {
     projectStatus?: () => void;
     teamWorkload?: () => void;
   };
+  onFetchPrevious?: {
+    series?: () => void;
+    weeklyTrends?: () => void;
+    backlogGrowth?: () => void;
+  };
+};
+
+type DrillDownData = {
+  title: string;
+  type: 'month' | 'week' | 'project' | 'team';
+  data: Record<string, any>;
+  metadata?: Record<string, string>;
 };
 
 export function Overview({
   kpi,
   series,
+  previousSeries,
   weeklyTrends,
+  previousWeeklyTrends,
   backlogGrowth,
+  previousBacklogGrowth,
   taskStatus,
   projectStatus,
   teamWorkload,
+  comparePeriod,
+  onCompareToggle,
   loading,
   errors,
   onRetry,
+  onFetchPrevious,
 }: OverviewProps) {
   const { isDark } = useDarkMode();
   const { t } = useI18n();
+  const [drillDownData, setDrillDownData] = useState<DrillDownData | null>(null);
+  const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
+
+  // Fetch previous period data when comparison is enabled
+  useEffect(() => {
+    if (comparePeriod && onFetchPrevious) {
+      onFetchPrevious.series?.();
+      onFetchPrevious.weeklyTrends?.();
+      onFetchPrevious.backlogGrowth?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comparePeriod]); // Only depend on comparePeriod to avoid infinite loop
+
+  const handleChartClick = (type: 'velocity' | 'completion' | 'backlog' | 'weekly', payload: any) => {
+    if (!payload) return;
+
+    let drillDown: DrillDownData | null = null;
+
+    switch (type) {
+      case 'velocity':
+        drillDown = {
+          title: `${t('drillDown.velocity.title')} - ${t('drillDown.month').replace('{month}', String(payload.month))}`,
+          type: 'month',
+          data: {
+            velocity: payload.velocity,
+            month: payload.month,
+          },
+          metadata: {
+            Period: t('drillDown.month').replace('{month}', String(payload.month)),
+            'Velocity Score': `${payload.velocity}`,
+          },
+        };
+        break;
+      case 'completion':
+        drillDown = {
+          title: `${t('drillDown.completion.title')} - ${t('drillDown.month').replace('{month}', String(payload.month))}`,
+          type: 'month',
+          data: {
+            completion: payload.completion,
+            month: payload.month,
+          },
+          metadata: {
+            Period: t('drillDown.month').replace('{month}', String(payload.month)),
+            'Completion Rate': `${payload.completion}%`,
+          },
+        };
+        break;
+      case 'backlog':
+        drillDown = {
+          title: `${t('drillDown.backlog.title')} - ${t('drillDown.month').replace('{month}', String(payload.month))}`,
+          type: 'month',
+          data: {
+            backlog: payload.backlog,
+            completed: payload.completed,
+            month: payload.month,
+          },
+          metadata: {
+            Period: t('drillDown.month').replace('{month}', String(payload.month)),
+            'Backlog Items': payload.backlog,
+            'Completed Items': payload.completed,
+          },
+        };
+        break;
+      case 'weekly':
+        drillDown = {
+          title: `${t('drillDown.weekly.title')} - ${t('drillDown.week').replace('{week}', String(payload.week))}`,
+          type: 'week',
+          data: {
+            completed: payload.completed,
+            inProgress: payload.inProgress,
+            blocked: payload.blocked,
+            week: payload.week,
+          },
+          metadata: {
+            Period: t('drillDown.week').replace('{week}', String(payload.week)),
+            'Completed Tasks': payload.completed,
+            'In Progress': payload.inProgress,
+            'Blocked': payload.blocked,
+          },
+        };
+        break;
+    }
+
+    if (drillDown) {
+      setDrillDownData(drillDown);
+      setIsDrillDownOpen(true);
+    }
+  };
 
   // Show error if KPI failed
   if (errors?.kpi) {
@@ -84,6 +198,25 @@ export function Overview({
 
   return (
     <div className="space-y-6">
+      {/* Header with Comparison Toggle */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary-dark">
+          {t('overview.title')}
+        </h2>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={comparePeriod}
+            onChange={(e) => onCompareToggle(e.target.checked)}
+            className="w-4 h-4 rounded border-border dark:border-border-dark text-primary dark:text-primary-dark focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"
+          />
+          <div className="flex items-center gap-2 text-sm text-text-secondary dark:text-text-secondary-dark">
+            <TrendingUp className="w-4 h-4" />
+            <span>{t('overview.comparePeriod')}</span>
+          </div>
+        </label>
+      </div>
+
       {/* KPIs */}
       <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {loading?.kpi ? (
@@ -121,7 +254,15 @@ export function Overview({
               <LoadingSpinner size="lg" />
             ) : (
               <ResponsiveContainer>
-                <LineChart data={series}>
+                <LineChart
+                  data={series}
+                  onClick={(data) => {
+                    if (data && data.activePayload && data.activePayload[0]) {
+                      handleChartClick('velocity', data.activePayload[0].payload);
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <XAxis
                     dataKey="month"
                     stroke={isDark ? '#B0BEC5' : '#555555'}
@@ -144,8 +285,23 @@ export function Overview({
                     dataKey="velocity"
                     stroke={isDark ? '#1565C0' : '#0D47A1'}
                     strokeWidth={2}
-                    dot={false}
+                    dot={{ r: 4, fill: isDark ? '#1565C0' : '#0D47A1', cursor: 'pointer' }}
+                    activeDot={{ r: 6, cursor: 'pointer' }}
+                    name={t('overview.charts.currentPeriod')}
                   />
+                  {comparePeriod && previousSeries.length > 0 && (
+                    <Line
+                      type="monotone"
+                      dataKey="velocity"
+                      data={previousSeries}
+                      stroke={isDark ? '#64B5F6' : '#42A5F5'}
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      dot={{ r: 4, fill: isDark ? '#64B5F6' : '#42A5F5', cursor: 'pointer' }}
+                      activeDot={{ r: 6, cursor: 'pointer' }}
+                      name={t('overview.charts.previousPeriod')}
+                    />
+                  )}
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -164,7 +320,15 @@ export function Overview({
               <LoadingSpinner size="lg" />
             ) : (
               <ResponsiveContainer>
-                <AreaChart data={series}>
+                <AreaChart
+                  data={series}
+                  onClick={(data) => {
+                    if (data && data.activePayload && data.activePayload[0]) {
+                      handleChartClick('completion', data.activePayload[0].payload);
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <XAxis
                     dataKey="month"
                     stroke={isDark ? '#B0BEC5' : '#555555'}
@@ -188,7 +352,20 @@ export function Overview({
                     stroke={isDark ? '#00E5A0' : '#00C896'}
                     fill={isDark ? '#00E5A0' : '#00C896'}
                     fillOpacity={0.3}
+                    name={t('overview.charts.currentPeriod')}
                   />
+                  {comparePeriod && previousSeries.length > 0 && (
+                    <Area
+                      type="monotone"
+                      dataKey="completion"
+                      data={previousSeries}
+                      stroke={isDark ? '#80DEEA' : '#80DEEA'}
+                      fill={isDark ? '#80DEEA' : '#80DEEA'}
+                      fillOpacity={0.2}
+                      strokeDasharray="5 5"
+                      name={t('overview.charts.previousPeriod')}
+                    />
+                  )}
                 </AreaChart>
               </ResponsiveContainer>
             )}
@@ -206,9 +383,11 @@ export function Overview({
           <div className="h-72">
             <BacklogGrowthChart
               data={backlogGrowth}
+              previousData={comparePeriod ? previousBacklogGrowth : undefined}
               loading={loading?.backlogGrowth}
               error={errors?.backlogGrowth}
               onRetry={onRetry?.backlogGrowth}
+              onDataPointClick={(payload) => handleChartClick('backlog', payload)}
             />
           </div>
         </div>
@@ -221,9 +400,11 @@ export function Overview({
           <div className="h-72">
             <WeeklyTrendsChart
               data={weeklyTrends}
+              previousData={comparePeriod ? previousWeeklyTrends : undefined}
               loading={loading?.weeklyTrends}
               error={errors?.weeklyTrends}
               onRetry={onRetry?.weeklyTrends}
+              onDataPointClick={(payload) => handleChartClick('weekly', payload)}
             />
           </div>
         </div>
@@ -276,6 +457,16 @@ export function Overview({
           </div>
         </div>
       </div>
+
+      {/* Drill Down Modal */}
+      <DrillDownModal
+        isOpen={isDrillDownOpen}
+        onClose={() => {
+          setIsDrillDownOpen(false);
+          setDrillDownData(null);
+        }}
+        data={drillDownData}
+      />
     </div>
   );
 }

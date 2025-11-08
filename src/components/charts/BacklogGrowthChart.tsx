@@ -6,12 +6,14 @@ import { ErrorCard } from '../Error';
 
 type BacklogGrowthChartProps = {
   data: BacklogData[];
+  previousData?: BacklogData[];
   loading?: boolean;
   error?: string | null;
   onRetry?: () => void;
+  onDataPointClick?: (payload: BacklogData) => void;
 };
 
-export function BacklogGrowthChart({ data, loading, error, onRetry }: BacklogGrowthChartProps) {
+export function BacklogGrowthChart({ data, previousData, loading, error, onRetry, onDataPointClick }: BacklogGrowthChartProps) {
   const { isDark } = useDarkMode();
 
   if (error) {
@@ -24,7 +26,15 @@ export function BacklogGrowthChart({ data, loading, error, onRetry }: BacklogGro
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <ComposedChart data={data}>
+      <ComposedChart
+        data={data}
+        onClick={(chartData) => {
+          if (chartData && chartData.activePayload && chartData.activePayload[0] && onDataPointClick) {
+            onDataPointClick(chartData.activePayload[0].payload);
+          }
+        }}
+        style={{ cursor: onDataPointClick ? 'pointer' : 'default' }}
+      >
         <XAxis
           dataKey="month"
           stroke={isDark ? '#B0BEC5' : '#555555'}
@@ -53,15 +63,38 @@ export function BacklogGrowthChart({ data, loading, error, onRetry }: BacklogGro
           fill={isDark ? '#FF6F61' : '#EF5350'}
           fillOpacity={0.3}
           stroke={isDark ? '#FF6F61' : '#EF5350'}
-          name="Backlog"
+          name="Backlog (Current)"
         />
         <Line
           type="monotone"
           dataKey="completed"
           stroke={isDark ? '#00E5A0' : '#00C896'}
           strokeWidth={2}
-          name="Completed"
+          name="Completed (Current)"
         />
+        {previousData && previousData.length > 0 && (
+          <>
+            <Area
+              type="monotone"
+              dataKey="backlog"
+              data={previousData}
+              fill={isDark ? '#FFAB91' : '#FFAB91'}
+              fillOpacity={0.2}
+              stroke={isDark ? '#FFAB91' : '#FFAB91'}
+              strokeDasharray="5 5"
+              name="Backlog (Previous)"
+            />
+            <Line
+              type="monotone"
+              dataKey="completed"
+              data={previousData}
+              stroke={isDark ? '#80DEEA' : '#80DEEA'}
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              name="Completed (Previous)"
+            />
+          </>
+        )}
       </ComposedChart>
     </ResponsiveContainer>
   );

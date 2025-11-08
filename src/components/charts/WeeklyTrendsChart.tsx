@@ -6,12 +6,14 @@ import { ErrorCard } from '../Error';
 
 type WeeklyTrendsChartProps = {
   data: WeeklyTrend[];
+  previousData?: WeeklyTrend[];
   loading?: boolean;
   error?: string | null;
   onRetry?: () => void;
+  onDataPointClick?: (payload: WeeklyTrend) => void;
 };
 
-export function WeeklyTrendsChart({ data, loading, error, onRetry }: WeeklyTrendsChartProps) {
+export function WeeklyTrendsChart({ data, previousData, loading, error, onRetry, onDataPointClick }: WeeklyTrendsChartProps) {
   const { isDark } = useDarkMode();
 
   if (error) {
@@ -28,9 +30,42 @@ export function WeeklyTrendsChart({ data, loading, error, onRetry }: WeeklyTrend
     blocked: isDark ? '#FF6F61' : '#EF5350',
   };
 
+  const previousColors = {
+    completed: isDark ? '#80DEEA' : '#80DEEA',
+    inProgress: isDark ? '#90CAF9' : '#90CAF9',
+    blocked: isDark ? '#FFAB91' : '#FFAB91',
+  };
+
+  // Combine data for comparison
+  const combinedData = previousData && previousData.length > 0
+    ? data.map((item, index) => ({
+        week: item.week,
+        completed: item.completed,
+        inProgress: item.inProgress,
+        blocked: item.blocked,
+        previousCompleted: previousData[index]?.completed || 0,
+        previousInProgress: previousData[index]?.inProgress || 0,
+        previousBlocked: previousData[index]?.blocked || 0,
+      }))
+    : data;
+
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data}>
+      <BarChart
+        data={combinedData}
+        onClick={(chartData) => {
+          if (chartData && chartData.activePayload && chartData.activePayload[0] && onDataPointClick) {
+            const payload = chartData.activePayload[0].payload;
+            onDataPointClick({
+              week: payload.week,
+              completed: payload.completed || 0,
+              inProgress: payload.inProgress || 0,
+              blocked: payload.blocked || 0,
+            });
+          }
+        }}
+        style={{ cursor: onDataPointClick ? 'pointer' : 'default' }}
+      >
         <XAxis
           dataKey="week"
           stroke={isDark ? '#B0BEC5' : '#555555'}
@@ -53,9 +88,16 @@ export function WeeklyTrendsChart({ data, loading, error, onRetry }: WeeklyTrend
             color: isDark ? '#F5F5F5' : '#1E1E1E',
           }}
         />
-        <Bar dataKey="completed" stackId="a" fill={colors.completed} name="Completed" />
-        <Bar dataKey="inProgress" stackId="a" fill={colors.inProgress} name="In Progress" />
-        <Bar dataKey="blocked" stackId="a" fill={colors.blocked} name="Blocked" />
+        <Bar dataKey="completed" stackId="a" fill={colors.completed} name="Completed (Current)" />
+        <Bar dataKey="inProgress" stackId="a" fill={colors.inProgress} name="In Progress (Current)" />
+        <Bar dataKey="blocked" stackId="a" fill={colors.blocked} name="Blocked (Current)" />
+        {previousData && previousData.length > 0 && (
+          <>
+            <Bar dataKey="previousCompleted" stackId="b" fill={previousColors.completed} fillOpacity={0.5} name="Completed (Previous)" />
+            <Bar dataKey="previousInProgress" stackId="b" fill={previousColors.inProgress} fillOpacity={0.5} name="In Progress (Previous)" />
+            <Bar dataKey="previousBlocked" stackId="b" fill={previousColors.blocked} fillOpacity={0.5} name="Blocked (Previous)" />
+          </>
+        )}
       </BarChart>
     </ResponsiveContainer>
   );
