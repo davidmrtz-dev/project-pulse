@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, AreaChart, Area, Brush } from 'recharts';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useI18n } from '../i18n/I18nProvider';
+import { useZoomPan } from '../hooks/useZoomPan';
 import { SkeletonCard, LoadingSpinner } from './Loading';
 import { ErrorCard } from './Error';
 import { BacklogGrowthChart } from './charts/BacklogGrowthChart';
@@ -10,6 +11,7 @@ import { TaskStatusChart } from './charts/TaskStatusChart';
 import { ProjectStatusChart } from './charts/ProjectStatusChart';
 import { TeamWorkloadChart } from './charts/TeamWorkloadChart';
 import { DrillDownModal } from './DrillDownModal';
+import { ZoomControls } from './ZoomControls';
 import { TrendingUp } from 'lucide-react';
 import type { KPI, Point, BacklogData, WeeklyTrend, TaskStatus, ProjectStatus, TeamWorkload } from '../types';
 
@@ -100,6 +102,12 @@ export function Overview({
   const { t } = useI18n();
   const [drillDownData, setDrillDownData] = useState<DrillDownData | null>(null);
   const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
+  
+  // Zoom/Pan hooks for each chart - use full data length for brush
+  const velocityZoom = useZoomPan(series.length || 12);
+  const completionZoom = useZoomPan(series.length || 12);
+  const backlogZoom = useZoomPan(backlogGrowth.length || 12);
+  const weeklyZoom = useZoomPan(weeklyTrends.length || 12);
 
   // Fetch previous period data when comparison is enabled
   useEffect(() => {
@@ -244,9 +252,18 @@ export function Overview({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Velocity Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
-          <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
-            {t('overview.charts.velocity')}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-medium text-text-primary dark:text-text-primary-dark">
+              {t('overview.charts.velocity')}
+            </h2>
+            <ZoomControls
+              onZoomIn={velocityZoom.zoomIn}
+              onZoomOut={velocityZoom.zoomOut}
+              onReset={velocityZoom.resetZoom}
+              isZoomed={velocityZoom.zoomState.isZoomed}
+              disabled={loading?.series || series.length === 0}
+            />
+          </div>
           <div className="h-72">
             {errors?.series ? (
               <ErrorCard message={errors.series} onRetry={onRetry?.series} />
@@ -255,7 +272,7 @@ export function Overview({
             ) : (
               <ResponsiveContainer>
                 <LineChart
-                  data={series}
+                  data={series.slice(velocityZoom.zoomState.startIndex, velocityZoom.zoomState.endIndex + 1)}
                   onClick={(data) => {
                     if (data && data.activePayload && data.activePayload[0]) {
                       handleChartClick('velocity', data.activePayload[0].payload);
@@ -293,7 +310,7 @@ export function Overview({
                     <Line
                       type="monotone"
                       dataKey="velocity"
-                      data={previousSeries}
+                      data={previousSeries.slice(velocityZoom.zoomState.startIndex, velocityZoom.zoomState.endIndex + 1)}
                       stroke={isDark ? '#64B5F6' : '#42A5F5'}
                       strokeWidth={2}
                       strokeDasharray="5 5"
@@ -302,6 +319,20 @@ export function Overview({
                       name={t('overview.charts.previousPeriod')}
                     />
                   )}
+                  <Brush
+                    dataKey="month"
+                    height={30}
+                    stroke={isDark ? '#64B5F6' : '#42A5F5'}
+                    fill={isDark ? '#132F4C' : '#E3F2FD'}
+                    onChange={(e) => {
+                      if (e && typeof e === 'object' && 'startIndex' in e && 'endIndex' in e) {
+                        velocityZoom.handleBrushChange(e.startIndex as number, e.endIndex as number);
+                      }
+                    }}
+                    startIndex={velocityZoom.zoomState.startIndex}
+                    endIndex={velocityZoom.zoomState.endIndex}
+                    data={series}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -310,9 +341,18 @@ export function Overview({
 
         {/* Completion Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
-          <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
-            {t('overview.charts.completion')}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-medium text-text-primary dark:text-text-primary-dark">
+              {t('overview.charts.completion')}
+            </h2>
+            <ZoomControls
+              onZoomIn={completionZoom.zoomIn}
+              onZoomOut={completionZoom.zoomOut}
+              onReset={completionZoom.resetZoom}
+              isZoomed={completionZoom.zoomState.isZoomed}
+              disabled={loading?.series || series.length === 0}
+            />
+          </div>
           <div className="h-72">
             {errors?.series ? (
               <ErrorCard message={errors.series} onRetry={onRetry?.series} />
@@ -321,7 +361,7 @@ export function Overview({
             ) : (
               <ResponsiveContainer>
                 <AreaChart
-                  data={series}
+                  data={series.slice(completionZoom.zoomState.startIndex, completionZoom.zoomState.endIndex + 1)}
                   onClick={(data) => {
                     if (data && data.activePayload && data.activePayload[0]) {
                       handleChartClick('completion', data.activePayload[0].payload);
@@ -358,7 +398,7 @@ export function Overview({
                     <Area
                       type="monotone"
                       dataKey="completion"
-                      data={previousSeries}
+                      data={previousSeries.slice(completionZoom.zoomState.startIndex, completionZoom.zoomState.endIndex + 1)}
                       stroke={isDark ? '#80DEEA' : '#80DEEA'}
                       fill={isDark ? '#80DEEA' : '#80DEEA'}
                       fillOpacity={0.2}
@@ -366,6 +406,20 @@ export function Overview({
                       name={t('overview.charts.previousPeriod')}
                     />
                   )}
+                  <Brush
+                    dataKey="month"
+                    height={30}
+                    stroke={isDark ? '#00E5A0' : '#00C896'}
+                    fill={isDark ? '#132F4C' : '#E8F5E9'}
+                    onChange={(e) => {
+                      if (e && typeof e === 'object' && 'startIndex' in e && 'endIndex' in e) {
+                        completionZoom.handleBrushChange(e.startIndex as number, e.endIndex as number);
+                      }
+                    }}
+                    startIndex={completionZoom.zoomState.startIndex}
+                    endIndex={completionZoom.zoomState.endIndex}
+                    data={series}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             )}
@@ -377,34 +431,58 @@ export function Overview({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Backlog Growth Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
-          <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
-            {t('overview.charts.backlogGrowth')}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-medium text-text-primary dark:text-text-primary-dark">
+              {t('overview.charts.backlogGrowth')}
+            </h2>
+            <ZoomControls
+              onZoomIn={backlogZoom.zoomIn}
+              onZoomOut={backlogZoom.zoomOut}
+              onReset={backlogZoom.resetZoom}
+              isZoomed={backlogZoom.zoomState.isZoomed}
+              disabled={loading?.backlogGrowth || backlogGrowth.length === 0}
+            />
+          </div>
           <div className="h-72">
             <BacklogGrowthChart
-              data={backlogGrowth}
-              previousData={comparePeriod ? previousBacklogGrowth : undefined}
+              data={backlogGrowth.slice(backlogZoom.zoomState.startIndex, backlogZoom.zoomState.endIndex + 1)}
+              previousData={comparePeriod ? previousBacklogGrowth.slice(backlogZoom.zoomState.startIndex, backlogZoom.zoomState.endIndex + 1) : undefined}
               loading={loading?.backlogGrowth}
               error={errors?.backlogGrowth}
               onRetry={onRetry?.backlogGrowth}
               onDataPointClick={(payload) => handleChartClick('backlog', payload)}
+              zoomState={backlogZoom.zoomState}
+              onBrushChange={backlogZoom.handleBrushChange}
+              fullData={backlogGrowth}
             />
           </div>
         </div>
 
         {/* Weekly Trends Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
-          <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
-            {t('overview.charts.weeklyTrends')}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-medium text-text-primary dark:text-text-primary-dark">
+              {t('overview.charts.weeklyTrends')}
+            </h2>
+            <ZoomControls
+              onZoomIn={weeklyZoom.zoomIn}
+              onZoomOut={weeklyZoom.zoomOut}
+              onReset={weeklyZoom.resetZoom}
+              isZoomed={weeklyZoom.zoomState.isZoomed}
+              disabled={loading?.weeklyTrends || weeklyTrends.length === 0}
+            />
+          </div>
           <div className="h-72">
             <WeeklyTrendsChart
-              data={weeklyTrends}
-              previousData={comparePeriod ? previousWeeklyTrends : undefined}
+              data={weeklyTrends.slice(weeklyZoom.zoomState.startIndex, weeklyZoom.zoomState.endIndex + 1)}
+              previousData={comparePeriod ? previousWeeklyTrends.slice(weeklyZoom.zoomState.startIndex, weeklyZoom.zoomState.endIndex + 1) : undefined}
               loading={loading?.weeklyTrends}
               error={errors?.weeklyTrends}
               onRetry={onRetry?.weeklyTrends}
               onDataPointClick={(payload) => handleChartClick('weekly', payload)}
+              zoomState={weeklyZoom.zoomState}
+              onBrushChange={weeklyZoom.handleBrushChange}
+              fullData={weeklyTrends}
             />
           </div>
         </div>

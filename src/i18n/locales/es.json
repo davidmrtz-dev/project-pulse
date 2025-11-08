@@ -136,6 +136,12 @@
     "weekly": {
       "title": "Detalles de Tendencias Semanales - Semana {week}"
     }
+  },
+  "zoom": {
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "reset": "Restablecer Zoom",
+    "hint": "Usa el selector debajo del gráfico para seleccionar un rango, o usa los controles de zoom"
   }
 }
 

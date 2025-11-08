@@ -1,6 +1,7 @@
-import { ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, Tooltip, Legend, Brush } from 'recharts';
 import { useDarkMode } from '../../hooks/useDarkMode';
 import type { BacklogData } from '../../types';
+import type { ZoomState } from '../../hooks/useZoomPan';
 import { LoadingSpinner } from '../Loading';
 import { ErrorCard } from '../Error';
 
@@ -11,9 +12,12 @@ type BacklogGrowthChartProps = {
   error?: string | null;
   onRetry?: () => void;
   onDataPointClick?: (payload: BacklogData) => void;
+  zoomState?: ZoomState;
+  onBrushChange?: (startIndex: number, endIndex: number) => void;
+  fullData?: BacklogData[]; // Full dataset for brush
 };
 
-export function BacklogGrowthChart({ data, previousData, loading, error, onRetry, onDataPointClick }: BacklogGrowthChartProps) {
+export function BacklogGrowthChart({ data, previousData, loading, error, onRetry, onDataPointClick, zoomState, onBrushChange, fullData }: BacklogGrowthChartProps) {
   const { isDark } = useDarkMode();
 
   if (error) {
@@ -94,6 +98,22 @@ export function BacklogGrowthChart({ data, previousData, loading, error, onRetry
               name="Completed (Previous)"
             />
           </>
+        )}
+        {zoomState && onBrushChange && fullData && (
+          <Brush
+            dataKey="month"
+            height={30}
+            stroke={isDark ? '#64B5F6' : '#42A5F5'}
+            fill={isDark ? '#132F4C' : '#E3F2FD'}
+            onChange={(e) => {
+              if (e && typeof e === 'object' && 'startIndex' in e && 'endIndex' in e) {
+                onBrushChange(e.startIndex as number, e.endIndex as number);
+              }
+            }}
+            startIndex={zoomState.startIndex}
+            endIndex={zoomState.endIndex}
+            data={fullData}
+          />
         )}
       </ComposedChart>
     </ResponsiveContainer>

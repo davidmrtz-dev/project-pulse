@@ -1,6 +1,7 @@
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Brush } from 'recharts';
 import { useDarkMode } from '../../hooks/useDarkMode';
 import type { WeeklyTrend } from '../../types';
+import type { ZoomState } from '../../hooks/useZoomPan';
 import { LoadingSpinner } from '../Loading';
 import { ErrorCard } from '../Error';
 
@@ -11,9 +12,12 @@ type WeeklyTrendsChartProps = {
   error?: string | null;
   onRetry?: () => void;
   onDataPointClick?: (payload: WeeklyTrend) => void;
+  zoomState?: ZoomState;
+  onBrushChange?: (startIndex: number, endIndex: number) => void;
+  fullData?: WeeklyTrend[]; // Full dataset for brush
 };
 
-export function WeeklyTrendsChart({ data, previousData, loading, error, onRetry, onDataPointClick }: WeeklyTrendsChartProps) {
+export function WeeklyTrendsChart({ data, previousData, loading, error, onRetry, onDataPointClick, zoomState, onBrushChange, fullData }: WeeklyTrendsChartProps) {
   const { isDark } = useDarkMode();
 
   if (error) {
@@ -97,6 +101,22 @@ export function WeeklyTrendsChart({ data, previousData, loading, error, onRetry,
             <Bar dataKey="previousInProgress" stackId="b" fill={previousColors.inProgress} fillOpacity={0.5} name="In Progress (Previous)" />
             <Bar dataKey="previousBlocked" stackId="b" fill={previousColors.blocked} fillOpacity={0.5} name="Blocked (Previous)" />
           </>
+        )}
+        {zoomState && onBrushChange && fullData && (
+          <Brush
+            dataKey="week"
+            height={30}
+            stroke={isDark ? '#64B5F6' : '#42A5F5'}
+            fill={isDark ? '#132F4C' : '#E3F2FD'}
+            onChange={(e) => {
+              if (e && typeof e === 'object' && 'startIndex' in e && 'endIndex' in e) {
+                onBrushChange(e.startIndex as number, e.endIndex as number);
+              }
+            }}
+            startIndex={zoomState.startIndex}
+            endIndex={zoomState.endIndex}
+            data={fullData}
+          />
         )}
       </BarChart>
     </ResponsiveContainer>

@@ -136,6 +136,12 @@
     "weekly": {
       "title": "Weekly Trends Details - Week {week}"
     }
+  },
+  "zoom": {
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "reset": "Reset Zoom",
+    "hint": "Use the brush below the chart to select a range, or use the zoom controls"
   }
 }
 
