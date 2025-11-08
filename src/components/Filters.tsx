@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Filter, X } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
 
 type FilterState = {
   dateRange: string;
@@ -13,6 +14,7 @@ type FiltersProps = {
 };
 
 export function Filters({ onFilterChange }: FiltersProps) {
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: 'all',
@@ -47,7 +49,7 @@ export function Filters({ onFilterChange }: FiltersProps) {
         className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border dark:border-border-dark bg-bg-panel dark:bg-bg-panel-dark text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors relative"
       >
         <Filter className="w-4 h-4" />
-        <span>Filters</span>
+        <span>{t('filters.title')}</span>
         {activeFiltersCount > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary dark:bg-primary-dark text-white text-xs rounded-full flex items-center justify-center">
             {activeFiltersCount}
@@ -64,7 +66,7 @@ export function Filters({ onFilterChange }: FiltersProps) {
           <div className="relative w-full max-w-sm bg-bg-panel dark:bg-bg-panel-dark border-l border-border dark:border-border-dark shadow-xl h-full overflow-y-auto">
             <div className="sticky top-0 bg-bg-panel dark:bg-bg-panel-dark border-b border-border dark:border-border-dark p-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-text-primary dark:text-text-primary-dark">
-                Filters
+                {t('filters.title')}
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
@@ -78,32 +80,32 @@ export function Filters({ onFilterChange }: FiltersProps) {
               {/* Date Range */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-text-primary dark:text-text-primary-dark">
-                  Date Range
+                  {t('filters.dateRange')}
                 </label>
                 <select
                   value={filters.dateRange}
                   onChange={(e) => handleFilterChange('dateRange', e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"
                 >
-                  <option value="all">All Time</option>
-                  <option value="week">Last Week</option>
-                  <option value="month">Last Month</option>
-                  <option value="quarter">Last Quarter</option>
-                  <option value="year">Last Year</option>
+                  <option value="all">{t('filters.options.dateRange.all')}</option>
+                  <option value="week">{t('filters.options.dateRange.week')}</option>
+                  <option value="month">{t('filters.options.dateRange.month')}</option>
+                  <option value="quarter">{t('filters.options.dateRange.quarter')}</option>
+                  <option value="year">{t('filters.options.dateRange.year')}</option>
                 </select>
               </div>
 
               {/* Team */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-text-primary dark:text-text-primary-dark">
-                  Team Member
+                  {t('filters.teamMember')}
                 </label>
                 <select
                   value={filters.team}
                   onChange={(e) => handleFilterChange('team', e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"
                 >
-                  <option value="all">All Members</option>
+                  <option value="all">{t('filters.options.team.all')}</option>
                   <option value="sarah">Sarah Chen</option>
                   <option value="marcus">Marcus Johnson</option>
                   <option value="emma">Emma Wilson</option>
@@ -116,34 +118,34 @@ export function Filters({ onFilterChange }: FiltersProps) {
               {/* Status */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-text-primary dark:text-text-primary-dark">
-                  Status
+                  {t('filters.status')}
                 </label>
                 <select
                   value={filters.status}
                   onChange={(e) => handleFilterChange('status', e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"
                 >
-                  <option value="all">All Status</option>
-                  <option value="on-track">On Track</option>
-                  <option value="delayed">Delayed</option>
-                  <option value="blocked">Blocked</option>
+                  <option value="all">{t('filters.options.status.all')}</option>
+                  <option value="on-track">{t('filters.options.status.on-track')}</option>
+                  <option value="delayed">{t('filters.options.status.delayed')}</option>
+                  <option value="blocked">{t('filters.options.status.blocked')}</option>
                 </select>
               </div>
 
               {/* Priority */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-text-primary dark:text-text-primary-dark">
-                  Priority
+                  {t('filters.priority')}
                 </label>
                 <select
                   value={filters.priority}
                   onChange={(e) => handleFilterChange('priority', e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"
                 >
-                  <option value="all">All Priorities</option>
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
+                  <option value="all">{t('filters.options.priority.all')}</option>
+                  <option value="high">{t('filters.options.priority.high')}</option>
+                  <option value="medium">{t('filters.options.priority.medium')}</option>
+                  <option value="low">{t('filters.options.priority.low')}</option>
                 </select>
               </div>
 
@@ -153,7 +155,7 @@ export function Filters({ onFilterChange }: FiltersProps) {
                   onClick={clearFilters}
                   className="w-full px-4 py-2 rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark hover:bg-bg-panel dark:hover:bg-bg-panel-dark transition-colors"
                 >
-                  Clear All Filters
+                  {t('filters.clearAll')}
                 </button>
               )}
             </div>

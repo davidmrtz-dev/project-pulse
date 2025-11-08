@@ -1,0 +1,108 @@
+{
+  "common": {
+    "demo": "Demo · Front-end only",
+    "filters": "Filters",
+    "search": "Search",
+    "clear": "Clear",
+    "all": "All",
+    "loading": "Loading...",
+    "noData": "No data available"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "projects": "Projects",
+    "team": "Team",
+    "alerts": "Alerts"
+  },
+  "overview": {
+    "title": "Overview",
+    "kpis": {
+      "throughput": "Throughput",
+      "cycleTime": "Cycle Time",
+      "onTimeRate": "On-Time Rate"
+    },
+    "charts": {
+      "velocity": "Velocity (Monthly)",
+      "completion": "Completion Rate"
+    }
+  },
+  "projects": {
+    "title": "Active Projects",
+    "searchPlaceholder": "Search projects...",
+    "columns": {
+      "name": "Project Name",
+      "owner": "Owner",
+      "progress": "Progress",
+      "status": "Status",
+      "priority": "Priority",
+      "estimatedDate": "Estimated Date"
+    },
+    "status": {
+      "on-track": "On Track",
+      "delayed": "Delayed",
+      "blocked": "Blocked"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "team": {
+    "title": "Team Performance",
+    "velocity": "Team Velocity",
+    "member": {
+      "velocity": "Velocity",
+      "onTime": "On-Time",
+      "productivity": "Productivity"
+    }
+  },
+  "alerts": {
+    "title": "Alerts & Notifications",
+    "noAlerts": "No alerts at this time",
+    "messages": {
+      "projectsAtRisk": "projects at risk of delay",
+      "lowVelocity": "Sustained low velocity in the last sprint",
+      "newProject": "New project added:"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "dateRange": "Date Range",
+    "teamMember": "Team Member",
+    "status": "Status",
+    "priority": "Priority",
+    "clearAll": "Clear All Filters",
+    "options": {
+      "dateRange": {
+        "all": "All Time",
+        "week": "Last Week",
+        "month": "Last Month",
+        "quarter": "Last Quarter",
+        "year": "Last Year"
+      },
+      "team": {
+        "all": "All Members"
+      },
+      "status": {
+        "all": "All Status",
+        "on-track": "On Track",
+        "delayed": "Delayed",
+        "blocked": "Blocked"
+      },
+      "priority": {
+        "all": "All Priorities",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      }
+    }
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "m ago",
+    "hoursAgo": "h ago",
+    "daysAgo": "d ago"
+  }
+}
+

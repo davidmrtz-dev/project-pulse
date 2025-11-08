@@ -1,4 +1,5 @@
 import { AlertTriangle, Info, XCircle } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
 
 type Alert = {
   id: string;
@@ -20,12 +21,13 @@ const alertColors = {
 };
 
 export function Alerts({ alerts }: { alerts: Alert[] }) {
+  const { t } = useI18n();
 
   if (alerts.length === 0) {
     return (
       <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-6 border border-border dark:border-border-dark text-center">
         <p className="text-text-secondary dark:text-text-secondary-dark">
-          No alerts at this time
+          {t('alerts.noAlerts')}
         </p>
       </div>
     );
@@ -34,12 +36,12 @@ export function Alerts({ alerts }: { alerts: Alert[] }) {
   return (
     <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
       <h2 className="text-lg font-semibold mb-4 text-text-primary dark:text-text-primary-dark">
-        Alerts & Notifications
+        {t('alerts.title')}
       </h2>
       <div className="space-y-3">
         {alerts.map((alert) => {
           const Icon = alertIcons[alert.type];
-          const timeAgo = getTimeAgo(new Date(alert.timestamp));
+          const timeAgo = getTimeAgo(new Date(alert.timestamp), t);
           
           return (
             <div
@@ -59,16 +61,16 @@ export function Alerts({ alerts }: { alerts: Alert[] }) {
   );
 }
 
-function getTimeAgo(date: Date): string {
+function getTimeAgo(date: Date, t: (key: string) => string): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  return `${diffDays}d ago`;
+  if (diffMins < 1) return t('time.justNow');
+  if (diffMins < 60) return `${diffMins}${t('time.minutesAgo')}`;
+  if (diffHours < 24) return `${diffHours}${t('time.hoursAgo')}`;
+  return `${diffDays}${t('time.daysAgo')}`;
 }
 

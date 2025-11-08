@@ -8,6 +8,7 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import { useDarkMode } from '../hooks/useDarkMode';
+import { useI18n } from '../i18n/I18nProvider';
 
 type Project = {
   id: string;
@@ -35,13 +36,14 @@ const priorityColors = {
 
 export function ProjectsTable({ projects }: { projects: Project[] }) {
   const { isDark } = useDarkMode();
+  const { t } = useI18n();
   const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
   const columns = useMemo(
     () => [
       columnHelper.accessor('name', {
-        header: 'Project Name',
+        header: t('projects.columns.name'),
         cell: (info) => (
           <span className="font-medium text-text-primary dark:text-text-primary-dark">
             {info.getValue()}
@@ -49,7 +51,7 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
         ),
       }),
       columnHelper.accessor('owner', {
-        header: 'Owner',
+        header: t('projects.columns.owner'),
         cell: (info) => (
           <span className="text-text-secondary dark:text-text-secondary-dark">
             {info.getValue()}
@@ -57,7 +59,7 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
         ),
       }),
       columnHelper.accessor('progress', {
-        header: 'Progress',
+        header: t('projects.columns.progress'),
         cell: (info) => {
           const progress = info.getValue();
           return (
@@ -76,18 +78,18 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
         },
       }),
       columnHelper.accessor('status', {
-        header: 'Status',
+        header: t('projects.columns.status'),
         cell: (info) => {
           const status = info.getValue();
           return (
             <span className={`capitalize ${statusColors[status]}`}>
-              {status.replace('-', ' ')}
+              {t(`projects.status.${status}`)}
             </span>
           );
         },
       }),
       columnHelper.accessor('priority', {
-        header: 'Priority',
+        header: t('projects.columns.priority'),
         cell: (info) => {
           const priority = info.getValue();
           return (
@@ -96,7 +98,7 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
         },
       }),
       columnHelper.accessor('estimatedDate', {
-        header: 'Estimated Date',
+        header: t('projects.columns.estimatedDate'),
         cell: (info) => (
           <span className="text-text-secondary dark:text-text-secondary-dark">
             {new Date(info.getValue()).toLocaleDateString()}
@@ -104,7 +106,7 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
         ),
       }),
     ],
-    [isDark]
+    [isDark, t]
   );
 
   const table = useReactTable({
@@ -125,11 +127,11 @@ export function ProjectsTable({ projects }: { projects: Project[] }) {
     <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm border border-border dark:border-border-dark overflow-hidden">
       <div className="p-4 border-b border-border dark:border-border-dark flex items-center justify-between">
         <h2 className="text-lg font-semibold text-text-primary dark:text-text-primary-dark">
-          Active Projects
+          {t('projects.title')}
         </h2>
         <input
           type="text"
-          placeholder="Search projects..."
+          placeholder={t('projects.searchPlaceholder')}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="px-3 py-1.5 text-sm rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark placeholder:text-text-secondary dark:placeholder:text-text-secondary-dark focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"

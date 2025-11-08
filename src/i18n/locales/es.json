@@ -1,0 +1,108 @@
+{
+  "common": {
+    "demo": "Demo · Solo front-end",
+    "filters": "Filtros",
+    "search": "Buscar",
+    "clear": "Limpiar",
+    "all": "Todos",
+    "loading": "Cargando...",
+    "noData": "No hay datos disponibles"
+  },
+  "tabs": {
+    "overview": "Resumen",
+    "projects": "Proyectos",
+    "team": "Equipo",
+    "alerts": "Alertas"
+  },
+  "overview": {
+    "title": "Resumen",
+    "kpis": {
+      "throughput": "Rendimiento",
+      "cycleTime": "Tiempo de Ciclo",
+      "onTimeRate": "Tasa de Cumplimiento"
+    },
+    "charts": {
+      "velocity": "Velocidad (Mensual)",
+      "completion": "Tasa de Finalización"
+    }
+  },
+  "projects": {
+    "title": "Proyectos Activos",
+    "searchPlaceholder": "Buscar proyectos...",
+    "columns": {
+      "name": "Nombre del Proyecto",
+      "owner": "Responsable",
+      "progress": "Progreso",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "estimatedDate": "Fecha Estimada"
+    },
+    "status": {
+      "on-track": "En Curso",
+      "delayed": "Retrasado",
+      "blocked": "Bloqueado"
+    },
+    "priority": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    }
+  },
+  "team": {
+    "title": "Rendimiento del Equipo",
+    "velocity": "Velocidad del Equipo",
+    "member": {
+      "velocity": "Velocidad",
+      "onTime": "A Tiempo",
+      "productivity": "Productividad"
+    }
+  },
+  "alerts": {
+    "title": "Alertas y Notificaciones",
+    "noAlerts": "No hay alertas en este momento",
+    "messages": {
+      "projectsAtRisk": "proyectos en riesgo de retraso",
+      "lowVelocity": "Baja velocidad sostenida en el último sprint",
+      "newProject": "Nuevo proyecto agregado:"
+    }
+  },
+  "filters": {
+    "title": "Filtros",
+    "dateRange": "Rango de Fechas",
+    "teamMember": "Miembro del Equipo",
+    "status": "Estado",
+    "priority": "Prioridad",
+    "clearAll": "Limpiar Todos los Filtros",
+    "options": {
+      "dateRange": {
+        "all": "Todo el Tiempo",
+        "week": "Última Semana",
+        "month": "Último Mes",
+        "quarter": "Último Trimestre",
+        "year": "Último Año"
+      },
+      "team": {
+        "all": "Todos los Miembros"
+      },
+      "status": {
+        "all": "Todos los Estados",
+        "on-track": "En Curso",
+        "delayed": "Retrasado",
+        "blocked": "Bloqueado"
+      },
+      "priority": {
+        "all": "Todas las Prioridades",
+        "high": "Alta",
+        "medium": "Media",
+        "low": "Baja"
+      }
+    }
+  },
+  "time": {
+    "justNow": "Ahora mismo",
+    "minutesAgo": "m atrás",
+    "hoursAgo": "h atrás",
+    "daysAgo": "d atrás"
+  }
+}
+

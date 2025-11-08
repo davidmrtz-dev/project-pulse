@@ -1,5 +1,6 @@
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts';
 import { useDarkMode } from '../hooks/useDarkMode';
+import { useI18n } from '../i18n/I18nProvider';
 
 type KPI = {
   throughput: number;
@@ -26,14 +27,15 @@ function KpiCard({ label, value, suffix }: { label: string; value: string | numb
 
 export function Overview({ kpi, series }: { kpi: KPI | null; series: Point[] }) {
   const { isDark } = useDarkMode();
+  const { t } = useI18n();
 
   return (
     <div className="space-y-6">
       {/* KPIs */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <KpiCard label="Throughput" value={kpi?.throughput ?? '—'} suffix="/wk" />
-        <KpiCard label="Cycle Time" value={kpi?.cycleTimeDays ?? '—'} suffix="d" />
-        <KpiCard label="On-Time Rate" value={kpi ? `${Math.round(kpi.onTimeRate * 100)}%` : '—'} />
+        <KpiCard label={t('overview.kpis.throughput')} value={kpi?.throughput ?? '—'} suffix="/wk" />
+        <KpiCard label={t('overview.kpis.cycleTime')} value={kpi?.cycleTimeDays ?? '—'} suffix="d" />
+        <KpiCard label={t('overview.kpis.onTimeRate')} value={kpi ? `${Math.round(kpi.onTimeRate * 100)}%` : '—'} />
       </section>
 
       {/* Charts Grid */}
@@ -41,7 +43,7 @@ export function Overview({ kpi, series }: { kpi: KPI | null; series: Point[] }) 
         {/* Velocity Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
-            Velocity (Monthly)
+            {t('overview.charts.velocity')}
           </h2>
           <div className="h-72">
             <ResponsiveContainer>
@@ -78,7 +80,7 @@ export function Overview({ kpi, series }: { kpi: KPI | null; series: Point[] }) 
         {/* Completion Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
-            Completion Rate
+            {t('overview.charts.completion')}
           </h2>
           <div className="h-72">
             <ResponsiveContainer>

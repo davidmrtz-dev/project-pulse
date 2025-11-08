@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx'
 import './styles/globals.css';
+import { I18nProvider } from './i18n/I18nProvider';
 
 async function prepare() {
   if (import.meta.env.DEV) {
@@ -20,7 +21,11 @@ prepare().then(() => {
   if (!rootElement) {
     throw new Error('Root element not found');
   }
-  ReactDOM.createRoot(rootElement).render(<App />);
+  ReactDOM.createRoot(rootElement).render(
+    <I18nProvider>
+      <App />
+    </I18nProvider>
+  );
 }).catch((error) => {
   console.error('Failed to start application:', error);
 });
