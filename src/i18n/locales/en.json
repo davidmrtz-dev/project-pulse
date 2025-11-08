@@ -9,7 +9,13 @@
     "noData": "No data available",
     "error": "An error occurred while loading data",
     "retry": "Retry",
-    "close": "Close"
+    "close": "Close",
+    "export": "Export",
+    "exportCSV": "Export to CSV",
+    "exportProjects": "Export Projects",
+    "exportTeam": "Export Team",
+    "exportAlerts": "Export Alerts",
+    "exportAll": "Export All Data"
   },
   "tabs": {
     "overview": "Overview",
