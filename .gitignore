@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+color-palette.md
+project-pulse.md
+responsive.md

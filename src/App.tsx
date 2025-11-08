@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
+import { Moon, Sun } from 'lucide-react';
+import { useDarkMode } from './hooks/useDarkMode';
 
 type KPI = { throughput:number; cycleTimeDays:number; onTimeRate:number };
 type Point = { month:number; velocity:number; completion:number };
@@ -7,6 +9,7 @@ type Point = { month:number; velocity:number; completion:number };
 export default function App() {
   const [kpi, setKpi] = useState<KPI | null>(null);
   const [series, setSeries] = useState<Point[]>([]);
+  const { isDark, toggle } = useDarkMode();
 
   useEffect(() => {
     fetch('/api/kpis').then(r => r.json()).then(setKpi);
@@ -14,11 +17,24 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      <header className="sticky top-0 z-10 bg-white border-b">
+    <div className="min-h-screen bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark transition-colors duration-200">
+      <header className="sticky top-0 z-10 bg-bg-panel dark:bg-bg-panel-dark border-b border-border dark:border-border-dark shadow-sm">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Project Pulse</h1>
-          <div className="text-sm text-gray-500">Demo · Front-end only</div>
+          <h1 className="text-xl font-semibold text-text-primary dark:text-text-primary-dark">Project Pulse</h1>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-text-secondary dark:text-text-secondary-dark">Demo · Front-end only</div>
+            <button
+              onClick={toggle}
+              className="p-2 rounded-lg hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors"
+              aria-label="Toggle dark mode"
+            >
+              {isDark ? (
+                <Sun className="w-5 h-5 text-warning-dark" />
+              ) : (
+                <Moon className="w-5 h-5 text-text-secondary" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -31,15 +47,35 @@ export default function App() {
         </section>
 
         {/* Chart */}
-        <section className="bg-white rounded-2xl shadow-sm p-4">
-          <h2 className="text-base font-medium mb-4">Velocity (Monthly)</h2>
+        <section className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
+          <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">Velocity (Monthly)</h2>
           <div className="h-72">
             <ResponsiveContainer>
               <LineChart data={series}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="velocity" stroke="#0D47A1" strokeWidth={2} dot={false} />
+                <XAxis 
+                  dataKey="month" 
+                  stroke={isDark ? '#B0BEC5' : '#555555'}
+                  tick={{ fill: isDark ? '#B0BEC5' : '#555555' }}
+                />
+                <YAxis 
+                  stroke={isDark ? '#B0BEC5' : '#555555'}
+                  tick={{ fill: isDark ? '#B0BEC5' : '#555555' }}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: isDark ? '#132F4C' : '#FFFFFF',
+                    border: `1px solid ${isDark ? '#1E3A5F' : '#E0E0E0'}`,
+                    borderRadius: '0.5rem',
+                    color: isDark ? '#F5F5F5' : '#1E1E1E',
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="velocity" 
+                  stroke={isDark ? '#1565C0' : '#0D47A1'} 
+                  strokeWidth={2} 
+                  dot={false}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -51,10 +87,10 @@ export default function App() {
 
 function KpiCard({ label, value, suffix }: { label:string; value:string|number; suffix?:string }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-4">
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="mt-1 text-2xl font-semibold">
-        {value} <span className="text-gray-400 align-middle text-sm">{suffix}</span>
+    <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
+      <p className="text-sm text-text-secondary dark:text-text-secondary-dark">{label}</p>
+      <p className="mt-1 text-2xl font-semibold text-text-primary dark:text-text-primary-dark">
+        {value} <span className="text-text-secondary dark:text-text-secondary-dark align-middle text-sm">{suffix}</span>
       </p>
     </div>
   );
