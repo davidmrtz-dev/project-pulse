@@ -108,14 +108,32 @@ const alerts = [
 ];
 
 export const handlers = [
-  http.get('/api/kpis', () => HttpResponse.json({
-    throughput: 127,
-    cycleTimeDays: 4.3,
-    onTimeRate: 0.86,
-    activeProjects: 6,
-    totalTasks: 610,
-    completedTasks: 478,
-  })),
+  http.get('/api/kpis', ({ request }) => {
+    const url = new URL(request.url);
+    const period = url.searchParams.get('period') || 'current';
+    
+    // Current period KPIs
+    if (period === 'current') {
+      return HttpResponse.json({
+        throughput: 127,
+        cycleTimeDays: 4.3,
+        onTimeRate: 0.86,
+        activeProjects: 6,
+        totalTasks: 610,
+        completedTasks: 478,
+      });
+    }
+    
+    // Previous period KPIs (slightly lower values to show trends)
+    return HttpResponse.json({
+      throughput: 112,
+      cycleTimeDays: 5.1,
+      onTimeRate: 0.78,
+      activeProjects: 5,
+      totalTasks: 580,
+      completedTasks: 425,
+    });
+  }),
   http.get('/api/series', ({ request }) => {
     const url = new URL(request.url);
     const period = url.searchParams.get('period') || 'current';

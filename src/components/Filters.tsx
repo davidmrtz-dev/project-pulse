@@ -17,7 +17,7 @@ type FiltersProps = {
 
 export function Filters({ filters, onFilterChange }: FiltersProps) {
   const { t } = useI18n();
-  const { isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
   const [isOpen, setIsOpen] = useState(false);
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {

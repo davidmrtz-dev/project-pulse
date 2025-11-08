@@ -22,6 +22,7 @@ type FilterState = {
 interface AppState {
   // Data
   kpi: KPI | null;
+  previousKpi: KPI | null;
   series: Point[];
   previousSeries: Point[];
   projects: Project[];
@@ -70,6 +71,7 @@ interface AppState {
   
   // Actions
   setKpi: (kpi: KPI | null) => void;
+  setPreviousKpi: (kpi: KPI | null) => void;
   setSeries: (series: Point[]) => void;
   setProjects: (projects: Project[]) => void;
   setTeamMembers: (teamMembers: TeamMember[]) => void;
@@ -86,7 +88,7 @@ interface AppState {
   setError: (key: keyof AppState['errors'], error: string | null) => void;
   
   // Fetch actions
-  fetchKpi: () => Promise<void>;
+  fetchKpi: (period?: 'current' | 'previous') => Promise<void>;
   fetchSeries: (period?: 'current' | 'previous') => Promise<void>;
   fetchProjects: () => Promise<void>;
   fetchTeam: () => Promise<void>;
@@ -112,6 +114,7 @@ interface AppState {
 export const useStore = create<AppState>((set, get) => ({
   // Initial state
   kpi: null,
+  previousKpi: null,
   series: [],
   previousSeries: [],
   projects: [],
@@ -159,6 +162,7 @@ export const useStore = create<AppState>((set, get) => ({
   
   // Setters
   setKpi: (kpi) => set({ kpi }),
+  setPreviousKpi: (previousKpi) => set({ previousKpi }),
   setSeries: (series) => set({ series }),
   setPreviousSeries: (previousSeries: Point[]) => set({ previousSeries }),
   setProjects: (projects) => set({ projects }),
@@ -173,7 +177,18 @@ export const useStore = create<AppState>((set, get) => ({
   setTeamWorkload: (teamWorkload: TeamWorkload[]) => set({ teamWorkload }),
   setActiveTab: (activeTab) => set({ activeTab }),
   setFilters: (filters: FilterState) => set({ filters }),
-  setComparePeriod: (comparePeriod: boolean) => set({ comparePeriod }),
+  setComparePeriod: (comparePeriod: boolean) => {
+    set({ comparePeriod });
+    // Clear previous period data when comparison is disabled
+    if (!comparePeriod) {
+      set({ 
+        previousKpi: null,
+        previousSeries: [],
+        previousWeeklyTrends: [],
+        previousBacklogGrowth: []
+      });
+    }
+  },
   setLoading: (key, value) =>
     set((state) => ({
       loading: { ...state.loading, [key]: value },
@@ -184,16 +199,20 @@ export const useStore = create<AppState>((set, get) => ({
     })),
   
   // Fetch actions
-  fetchKpi: async () => {
+  fetchKpi: async (period: 'current' | 'previous' = 'current') => {
     set((state) => ({
       loading: { ...state.loading, kpi: true },
       errors: { ...state.errors, kpi: null },
     }));
     try {
-      const response = await fetch('/api/kpis');
+      const response = await fetch(`/api/kpis?period=${period}`);
       if (!response.ok) throw new Error('Failed to fetch KPIs');
       const data = await response.json();
-      set({ kpi: data });
+      if (period === 'previous') {
+        set({ previousKpi: data });
+      } else {
+        set({ kpi: data });
+      }
     } catch (error) {
       set((state) => ({
         errors: { ...state.errors, kpi: error instanceof Error ? error.message : 'Unknown error' },

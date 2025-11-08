@@ -32,7 +32,7 @@ type AlertsProps = {
 
 export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
   const { t } = useI18n();
-  const { isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
 
   if (error) {
     return <ErrorCard message={error} onRetry={onRetry} />;

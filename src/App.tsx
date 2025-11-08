@@ -19,6 +19,7 @@ import {
 export default function App() {
   const {
     kpi,
+    previousKpi,
     series,
     previousSeries,
     projects: allProjects,
@@ -64,11 +65,12 @@ export default function App() {
   // Memoize fetch previous functions to avoid recreating them on every render
   const handleFetchPrevious = useMemo(
     () => ({
+      kpi: () => fetchKpi('previous'),
       series: () => fetchSeries('previous'),
       weeklyTrends: () => fetchWeeklyTrends('previous'),
       backlogGrowth: () => fetchBacklogGrowth('previous'),
     }),
-    [fetchSeries, fetchWeeklyTrends, fetchBacklogGrowth]
+    [fetchKpi, fetchSeries, fetchWeeklyTrends, fetchBacklogGrowth]
   );
 
   // Filter projects based on filter state
@@ -346,6 +348,7 @@ export default function App() {
         {activeTab === 'overview' && (
           <Overview
             kpi={kpi}
+            previousKpi={previousKpi}
             series={series}
             previousSeries={previousSeries}
             weeklyTrends={weeklyTrends}

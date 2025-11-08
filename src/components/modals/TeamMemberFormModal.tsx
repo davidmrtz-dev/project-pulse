@@ -14,7 +14,7 @@ type TeamMemberFormModalProps = {
 
 export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormModalProps) {
   const { t } = useI18n();
-  const { isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
   const { createTeamMember, updateTeamMember } = useStore();
   const { addToast } = useNotifications();
   const [loading, setLoading] = useState(false);

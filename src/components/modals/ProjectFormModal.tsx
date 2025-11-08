@@ -15,7 +15,7 @@ type ProjectFormModalProps = {
 
 export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalProps) {
   const { t } = useI18n();
-  const { isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
   const { createProject, updateProject, teamMembers } = useStore();
   const { addToast } = useNotifications();
   const [loading, setLoading] = useState(false);

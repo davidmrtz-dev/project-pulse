@@ -10,7 +10,7 @@ type ErrorProps = {
 
 export function ErrorMessage({ message, onRetry, className = '' }: ErrorProps) {
   const { t } = useI18n();
-  const { isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
 
   return (
     <div

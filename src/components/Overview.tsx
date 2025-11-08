@@ -10,22 +10,100 @@ import { TaskStatusChart } from './charts/TaskStatusChart';
 import { ProjectStatusChart } from './charts/ProjectStatusChart';
 import { TeamWorkloadChart } from './charts/TeamWorkloadChart';
 import { DrillDownModal } from './DrillDownModal';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import type { KPI, Point, BacklogData, WeeklyTrend, TaskStatus, ProjectStatus, TeamWorkload } from '../types';
 
-function KpiCard({ label, value, suffix }: { label: string; value: string | number; suffix?: string }) {
+type TrendIndicator = {
+  value: number;
+  isPositive: boolean;
+  isNeutral: boolean;
+};
+
+function calculateTrend(current: number, previous: number | null | undefined, invert: boolean = false): TrendIndicator | null {
+  if (previous === null || previous === undefined) return null;
+  
+  // Handle division by zero or very small values
+  if (Math.abs(previous) < 0.01) {
+    // If previous is essentially zero, any positive current value is an improvement
+    if (current > 0.01) {
+      return {
+        value: 100,
+        isPositive: true,
+        isNeutral: false,
+      };
+    }
+    return null;
+  }
+  
+  const change = ((current - previous) / previous) * 100;
+  const isPositive = invert ? change < 0 : change > 0;
+  const isNeutral = Math.abs(change) < 0.1; // Less than 0.1% change is considered neutral
+  
+  return {
+    value: Math.abs(change),
+    isPositive,
+    isNeutral,
+  };
+}
+
+function KpiCard({ 
+  label, 
+  value, 
+  suffix, 
+  previousValue, 
+  invertTrend = false,
+  showTrend = false
+}: { 
+  label: string; 
+  value: string | number; 
+  suffix?: string;
+  previousValue?: number | null;
+  invertTrend?: boolean;
+  showTrend?: boolean;
+}) {
+  // Extract numeric value for trend calculation
+  const numericValue = typeof value === 'number' ? value : (typeof value === 'string' && value !== '—' ? parseFloat(value.replace('%', '')) : null);
+  
+  // Only calculate trend if showTrend is true and we have previous value
+  const trend = showTrend && numericValue !== null && previousValue !== undefined && previousValue !== null
+    ? calculateTrend(numericValue, previousValue, invertTrend)
+    : null;
+
+  const getTrendColor = () => {
+    if (!trend || trend.isNeutral) return 'text-text-secondary dark:text-text-secondary-dark';
+    return trend.isPositive 
+      ? 'text-success dark:text-success-dark' 
+      : 'text-error dark:text-error-dark';
+  };
+
+  const getTrendIcon = () => {
+    if (!trend || trend.isNeutral) return Minus;
+    return trend.isPositive ? TrendingUp : TrendingDown;
+  };
+
+  const TrendIcon = trend ? getTrendIcon() : Minus;
+
   return (
     <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
       <p className="text-sm text-text-secondary dark:text-text-secondary-dark">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-text-primary dark:text-text-primary-dark">
-        {value} <span className="text-text-secondary dark:text-text-secondary-dark align-middle text-sm">{suffix}</span>
-      </p>
+      <div className="mt-1 flex items-baseline gap-2">
+        <p className="text-2xl font-semibold text-text-primary dark:text-text-primary-dark">
+          {value} <span className="text-text-secondary dark:text-text-secondary-dark align-middle text-sm">{suffix}</span>
+        </p>
+        {trend && trend.value > 0 && (
+          <div className={`flex items-center gap-1 text-xs font-medium ${getTrendColor()}`}>
+            <TrendIcon className="w-3.5 h-3.5" />
+            <span>{trend.value.toFixed(1)}%</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 type OverviewProps = {
   kpi: KPI | null;
+  previousKpi: KPI | null;
   series: Point[];
   previousSeries: Point[];
   weeklyTrends: WeeklyTrend[];
@@ -65,6 +143,7 @@ type OverviewProps = {
     teamWorkload?: () => void;
   };
   onFetchPrevious?: {
+    kpi?: () => void;
     series?: () => void;
     weeklyTrends?: () => void;
     backlogGrowth?: () => void;
@@ -80,6 +159,7 @@ type DrillDownData = {
 
 export function Overview({
   kpi,
+  previousKpi,
   series,
   previousSeries,
   weeklyTrends,
@@ -101,12 +181,16 @@ export function Overview({
   const [drillDownData, setDrillDownData] = useState<DrillDownData | null>(null);
   const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
 
-  // Fetch previous period data when comparison is enabled
+  // Fetch previous period data when comparison is enabled, clear when disabled
   useEffect(() => {
     if (comparePeriod && onFetchPrevious) {
+      onFetchPrevious.kpi?.();
       onFetchPrevious.series?.();
       onFetchPrevious.weeklyTrends?.();
       onFetchPrevious.backlogGrowth?.();
+    } else if (!comparePeriod) {
+      // Clear previous period data when comparison is disabled
+      // This is handled by the store when comparePeriod is toggled
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comparePeriod]); // Only depend on comparePeriod to avoid infinite loop
@@ -230,12 +314,46 @@ export function Overview({
           </>
         ) : (
           <>
-            <KpiCard label={t('overview.kpis.throughput')} value={kpi?.throughput ?? '—'} suffix="/wk" />
-            <KpiCard label={t('overview.kpis.cycleTime')} value={kpi?.cycleTimeDays ?? '—'} suffix="d" />
-            <KpiCard label={t('overview.kpis.onTimeRate')} value={kpi ? `${Math.round(kpi.onTimeRate * 100)}%` : '—'} />
-            <KpiCard label={t('overview.kpis.activeProjects')} value={kpi?.activeProjects ?? '—'} />
-            <KpiCard label={t('overview.kpis.totalTasks')} value={kpi?.totalTasks ?? '—'} />
-            <KpiCard label={t('overview.kpis.completedTasks')} value={kpi?.completedTasks ?? '—'} />
+            <KpiCard 
+              label={t('overview.kpis.throughput')} 
+              value={kpi?.throughput ?? '—'} 
+              suffix="/wk"
+              previousValue={previousKpi?.throughput}
+              showTrend={comparePeriod}
+            />
+            <KpiCard 
+              label={t('overview.kpis.cycleTime')} 
+              value={kpi?.cycleTimeDays ?? '—'} 
+              suffix="d"
+              previousValue={previousKpi?.cycleTimeDays}
+              invertTrend={true}
+              showTrend={comparePeriod}
+            />
+            <KpiCard 
+              label={t('overview.kpis.onTimeRate')} 
+              value={kpi ? Math.round(kpi.onTimeRate * 100) : '—'}
+              suffix="%"
+              previousValue={previousKpi ? previousKpi.onTimeRate * 100 : null}
+              showTrend={comparePeriod}
+            />
+            <KpiCard 
+              label={t('overview.kpis.activeProjects')} 
+              value={kpi?.activeProjects ?? '—'}
+              previousValue={previousKpi?.activeProjects}
+              showTrend={comparePeriod}
+            />
+            <KpiCard 
+              label={t('overview.kpis.totalTasks')} 
+              value={kpi?.totalTasks ?? '—'}
+              previousValue={previousKpi?.totalTasks}
+              showTrend={comparePeriod}
+            />
+            <KpiCard 
+              label={t('overview.kpis.completedTasks')} 
+              value={kpi?.completedTasks ?? '—'}
+              previousValue={previousKpi?.completedTasks}
+              showTrend={comparePeriod}
+            />
           </>
         )}
       </section>

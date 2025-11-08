@@ -17,7 +17,7 @@ type DrillDownModalProps = {
 
 export function DrillDownModal({ isOpen, onClose, data }: DrillDownModalProps) {
   const { t } = useI18n();
-  const { isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
 
   if (!isOpen || !data) return null;
 
