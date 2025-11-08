@@ -1,5 +1,6 @@
 import { BaseModal } from './BaseModal';
 import { useI18n } from '../../i18n/I18nProvider';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 type ConfirmDeleteModalProps = {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function ConfirmDeleteModal({
   loading = false,
 }: ConfirmDeleteModalProps) {
   const { t } = useI18n();
+  const { isDark } = useDarkMode(); // Force re-render when theme changes
 
   const handleConfirm = () => {
     onConfirm();

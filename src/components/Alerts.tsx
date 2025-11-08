@@ -1,5 +1,6 @@
 import { AlertTriangle, Info, XCircle } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { useDarkMode } from '../hooks/useDarkMode';
 import { LoadingSpinner } from './Loading';
 import { ErrorCard } from './Error';
 
@@ -31,6 +32,7 @@ type AlertsProps = {
 
 export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
   const { t } = useI18n();
+  const { isDark } = useDarkMode(); // Force re-render when theme changes
 
   if (error) {
     return <ErrorCard message={error} onRetry={onRetry} />;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BaseModal } from './BaseModal';
 import { useI18n } from '../../i18n/I18nProvider';
+import { useDarkMode } from '../../hooks/useDarkMode';
 import { useStore } from '../../store/useStore';
 import { useNotifications } from '../../lib/notifications';
 import { validateProject, type ValidationError } from '../../lib/validation';
@@ -14,6 +15,7 @@ type ProjectFormModalProps = {
 
 export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalProps) {
   const { t } = useI18n();
+  const { isDark } = useDarkMode(); // Force re-render when theme changes
   const { createProject, updateProject, teamMembers } = useStore();
   const { addToast } = useNotifications();
   const [loading, setLoading] = useState(false);

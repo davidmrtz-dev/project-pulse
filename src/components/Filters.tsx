@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Filter, X } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 type FilterState = {
   dateRange: string;
@@ -16,6 +17,7 @@ type FiltersProps = {
 
 export function Filters({ filters, onFilterChange }: FiltersProps) {
   const { t } = useI18n();
+  const { isDark } = useDarkMode(); // Force re-render when theme changes
   const [isOpen, setIsOpen] = useState(false);
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {

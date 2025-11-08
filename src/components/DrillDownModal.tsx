@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 type DrillDownData = {
   title: string;
@@ -16,6 +17,7 @@ type DrillDownModalProps = {
 
 export function DrillDownModal({ isOpen, onClose, data }: DrillDownModalProps) {
   const { t } = useI18n();
+  const { isDark } = useDarkMode(); // Force re-render when theme changes
 
   if (!isOpen || !data) return null;
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BaseModal } from './BaseModal';
 import { useI18n } from '../../i18n/I18nProvider';
+import { useDarkMode } from '../../hooks/useDarkMode';
 import { useStore } from '../../store/useStore';
 import { useNotifications } from '../../lib/notifications';
 import type { TeamMember } from '../../types';
@@ -13,6 +14,7 @@ type TeamMemberFormModalProps = {
 
 export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormModalProps) {
   const { t } = useI18n();
+  const { isDark } = useDarkMode(); // Force re-render when theme changes
   const { createTeamMember, updateTeamMember } = useStore();
   const { addToast } = useNotifications();
   const [loading, setLoading] = useState(false);

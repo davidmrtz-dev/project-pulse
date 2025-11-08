@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
 type BaseModalProps = {
   isOpen: boolean;
@@ -28,6 +29,8 @@ export function BaseModal({
   maxWidth = '2xl',
   showCloseButton = true,
 }: BaseModalProps) {
+  const { isDark } = useDarkMode(); // Force re-render when theme changes
+  
   // Close on Escape key
   useEffect(() => {
     if (!isOpen) return;
