@@ -16,6 +16,11 @@ export default function App() {
     projects: allProjects,
     teamMembers: allTeamMembers,
     alerts: allAlerts,
+    weeklyTrends,
+    backlogGrowth,
+    taskStatus,
+    projectStatus,
+    teamWorkload,
     activeTab,
     filters,
     loading,
@@ -28,6 +33,11 @@ export default function App() {
     fetchProjects,
     fetchTeam,
     fetchAlerts,
+    fetchWeeklyTrends,
+    fetchBacklogGrowth,
+    fetchTaskStatus,
+    fetchProjectStatus,
+    fetchTeamWorkload,
   } = useStore();
 
   const { isDark, toggle } = useDarkMode();
@@ -233,9 +243,38 @@ export default function App() {
           <Overview
             kpi={kpi}
             series={series}
-            loading={{ kpi: loading.kpi, series: loading.series }}
-            errors={{ kpi: errors.kpi, series: errors.series }}
-            onRetry={{ kpi: fetchKpi, series: fetchSeries }}
+            weeklyTrends={weeklyTrends}
+            backlogGrowth={backlogGrowth}
+            taskStatus={taskStatus}
+            projectStatus={projectStatus}
+            teamWorkload={teamWorkload}
+            loading={{
+              kpi: loading.kpi,
+              series: loading.series,
+              weeklyTrends: loading.weeklyTrends,
+              backlogGrowth: loading.backlogGrowth,
+              taskStatus: loading.taskStatus,
+              projectStatus: loading.projectStatus,
+              teamWorkload: loading.teamWorkload,
+            }}
+            errors={{
+              kpi: errors.kpi,
+              series: errors.series,
+              weeklyTrends: errors.weeklyTrends,
+              backlogGrowth: errors.backlogGrowth,
+              taskStatus: errors.taskStatus,
+              projectStatus: errors.projectStatus,
+              teamWorkload: errors.teamWorkload,
+            }}
+            onRetry={{
+              kpi: fetchKpi,
+              series: fetchSeries,
+              weeklyTrends: fetchWeeklyTrends,
+              backlogGrowth: fetchBacklogGrowth,
+              taskStatus: fetchTaskStatus,
+              projectStatus: fetchProjectStatus,
+              teamWorkload: fetchTeamWorkload,
+            }}
           />
         )}
         {activeTab === 'projects' && (

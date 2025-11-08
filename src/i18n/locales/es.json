@@ -21,11 +21,19 @@
     "kpis": {
       "throughput": "Rendimiento",
       "cycleTime": "Tiempo de Ciclo",
-      "onTimeRate": "Tasa de Cumplimiento"
+      "onTimeRate": "Tasa de Cumplimiento",
+      "activeProjects": "Proyectos Activos",
+      "totalTasks": "Tareas Totales",
+      "completedTasks": "Tareas Completadas"
     },
     "charts": {
       "velocity": "Velocidad (Mensual)",
-      "completion": "Tasa de Finalización"
+      "completion": "Tasa de Finalización",
+      "backlogGrowth": "Crecimiento del Backlog",
+      "weeklyTrends": "Tendencias Semanales",
+      "taskStatus": "Distribución de Estado de Tareas",
+      "projectStatus": "Desglose de Estado de Proyectos",
+      "teamWorkload": "Carga de Trabajo del Equipo"
     }
   },
   "projects": {

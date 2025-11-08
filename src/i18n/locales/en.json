@@ -21,11 +21,19 @@
     "kpis": {
       "throughput": "Throughput",
       "cycleTime": "Cycle Time",
-      "onTimeRate": "On-Time Rate"
+      "onTimeRate": "On-Time Rate",
+      "activeProjects": "Active Projects",
+      "totalTasks": "Total Tasks",
+      "completedTasks": "Completed Tasks"
     },
     "charts": {
       "velocity": "Velocity (Monthly)",
-      "completion": "Completion Rate"
+      "completion": "Completion Rate",
+      "backlogGrowth": "Backlog Growth",
+      "weeklyTrends": "Weekly Trends",
+      "taskStatus": "Task Status Distribution",
+      "projectStatus": "Project Status Breakdown",
+      "teamWorkload": "Team Workload"
     }
   },
   "projects": {
