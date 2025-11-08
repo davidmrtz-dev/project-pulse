@@ -90,10 +90,29 @@
   "team": {
     "title": "Team Performance",
     "velocity": "Team Velocity",
+    "addMember": "Add Member",
+    "createTitle": "Create New Team Member",
+    "editTitle": "Edit Team Member",
+    "deleteTitle": "Delete Team Member",
+    "deleteMessage": "Are you sure you want to delete this team member? This action cannot be undone.",
     "member": {
+      "name": "Name",
       "velocity": "Velocity",
       "onTime": "On-Time",
-      "productivity": "Productivity"
+      "productivity": "Productivity",
+      "activeProjects": "Active Projects"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "velocityRange": "Velocity must be between 0 and 100",
+      "onTimeRateRange": "On-time rate must be between 0 and 1",
+      "productivityPositive": "Productivity must be a positive number",
+      "activeProjectsPositive": "Active projects must be a positive number"
+    },
+    "messages": {
+      "created": "Team member created successfully",
+      "updated": "Team member updated successfully",
+      "deleted": "Team member deleted successfully"
     }
   },
   "alerts": {

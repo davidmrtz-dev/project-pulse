@@ -85,7 +85,8 @@ function getNextProjectId(): string {
   return String(maxId + 1);
 }
 
-const teamMembers = [
+// Mutable team members array for CRUD operations
+let teamMembers = [
   { id: '1', name: 'Sarah Chen', velocity: 28, onTimeRate: 0.94, weeklyProductivity: 32, activeProjects: 2 },
   { id: '2', name: 'Marcus Johnson', velocity: 22, onTimeRate: 0.78, weeklyProductivity: 25, activeProjects: 1 },
   { id: '3', name: 'Emma Wilson', velocity: 31, onTimeRate: 0.91, weeklyProductivity: 35, activeProjects: 3 },
@@ -93,6 +94,12 @@ const teamMembers = [
   { id: '5', name: 'Lisa Anderson', velocity: 26, onTimeRate: 0.88, weeklyProductivity: 29, activeProjects: 2 },
   { id: '6', name: 'James Brown', velocity: 24, onTimeRate: 0.82, weeklyProductivity: 27, activeProjects: 1 },
 ];
+
+// Helper to generate next team member ID
+function getNextTeamMemberId(): string {
+  const maxId = Math.max(...teamMembers.map(m => parseInt(m.id) || 0), 0);
+  return String(maxId + 1);
+}
 
 const alerts = [
   { id: '1', type: 'warning', message: '2 proyectos en riesgo de retraso', timestamp: new Date().toISOString() },
@@ -156,7 +163,44 @@ export const handlers = [
     projects.splice(index, 1);
     return HttpResponse.json({ success: true });
   }),
+  // Team members CRUD
   http.get('/api/team', () => HttpResponse.json(teamMembers)),
+  http.post('/api/team', async ({ request }) => {
+    const body = await request.json() as any;
+    const newMember = {
+      id: getNextTeamMemberId(),
+      name: body.name,
+      velocity: body.velocity ?? 0,
+      onTimeRate: body.onTimeRate ?? 0,
+      weeklyProductivity: body.weeklyProductivity ?? 0,
+      activeProjects: body.activeProjects ?? 0,
+    };
+    teamMembers.push(newMember);
+    return HttpResponse.json(newMember, { status: 201 });
+  }),
+  http.put('/api/team/:id', async ({ request, params }) => {
+    const { id } = params;
+    const body = await request.json() as any;
+    const index = teamMembers.findIndex(m => m.id === id);
+    
+    if (index === -1) {
+      return HttpResponse.json({ error: 'Team member not found' }, { status: 404 });
+    }
+    
+    teamMembers[index] = { ...teamMembers[index], ...body, id: String(id) };
+    return HttpResponse.json(teamMembers[index]);
+  }),
+  http.delete('/api/team/:id', ({ params }) => {
+    const { id } = params;
+    const index = teamMembers.findIndex(m => m.id === id);
+    
+    if (index === -1) {
+      return HttpResponse.json({ error: 'Team member not found' }, { status: 404 });
+    }
+    
+    teamMembers.splice(index, 1);
+    return HttpResponse.json({ success: true });
+  }),
   http.get('/api/alerts', () => HttpResponse.json(alerts)),
   http.get('/api/weekly-trends', ({ request }) => {
     const url = new URL(request.url);

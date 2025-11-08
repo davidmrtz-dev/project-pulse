@@ -90,10 +90,29 @@
   "team": {
     "title": "Rendimiento del Equipo",
     "velocity": "Velocidad del Equipo",
+    "addMember": "Agregar Miembro",
+    "createTitle": "Crear Nuevo Miembro del Equipo",
+    "editTitle": "Editar Miembro del Equipo",
+    "deleteTitle": "Eliminar Miembro del Equipo",
+    "deleteMessage": "¿Estás seguro de que deseas eliminar este miembro del equipo? Esta acción no se puede deshacer.",
     "member": {
+      "name": "Nombre",
       "velocity": "Velocidad",
       "onTime": "A Tiempo",
-      "productivity": "Productividad"
+      "productivity": "Productividad",
+      "activeProjects": "Proyectos Activos"
+    },
+    "validation": {
+      "nameRequired": "El nombre es requerido",
+      "velocityRange": "La velocidad debe estar entre 0 y 100",
+      "onTimeRateRange": "La tasa de cumplimiento debe estar entre 0 y 1",
+      "productivityPositive": "La productividad debe ser un número positivo",
+      "activeProjectsPositive": "Los proyectos activos deben ser un número positivo"
+    },
+    "messages": {
+      "created": "Miembro del equipo creado exitosamente",
+      "updated": "Miembro del equipo actualizado exitosamente",
+      "deleted": "Miembro del equipo eliminado exitosamente"
     }
   },
   "alerts": {

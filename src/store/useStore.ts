@@ -102,6 +102,11 @@ interface AppState {
   createProject: (project: Omit<Project, 'id'>) => Promise<Project>;
   updateProject: (id: string, project: Partial<Project>) => Promise<Project>;
   deleteProject: (id: string) => Promise<void>;
+  
+  // CRUD actions for team members
+  createTeamMember: (member: Omit<TeamMember, 'id'>) => Promise<TeamMember>;
+  updateTeamMember: (id: string, member: Partial<TeamMember>) => Promise<TeamMember>;
+  deleteTeamMember: (id: string) => Promise<void>;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -514,6 +519,96 @@ export const useStore = create<AppState>((set, get) => ({
     } finally {
       set((state) => ({
         loading: { ...state.loading, projects: false },
+      }));
+    }
+  },
+  
+  // CRUD actions for team members
+  createTeamMember: async (memberData) => {
+    set((state) => ({
+      loading: { ...state.loading, team: true },
+      errors: { ...state.errors, team: null },
+    }));
+    try {
+      const response = await fetch('/api/team', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(memberData),
+      });
+      if (!response.ok) throw new Error('Failed to create team member');
+      const newMember = await response.json();
+      set((state) => ({
+        teamMembers: [...state.teamMembers, newMember],
+      }));
+      // Refresh team list
+      await get().fetchTeam();
+      return newMember;
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, team: error instanceof Error ? error.message : 'Unknown error' },
+      }));
+      throw error;
+    } finally {
+      set((state) => ({
+        loading: { ...state.loading, team: false },
+      }));
+    }
+  },
+  
+  updateTeamMember: async (id, memberData) => {
+    set((state) => ({
+      loading: { ...state.loading, team: true },
+      errors: { ...state.errors, team: null },
+    }));
+    try {
+      const response = await fetch(`/api/team/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(memberData),
+      });
+      if (!response.ok) throw new Error('Failed to update team member');
+      const updatedMember = await response.json();
+      set((state) => ({
+        teamMembers: state.teamMembers.map((m) => (m.id === id ? updatedMember : m)),
+      }));
+      // Refresh team list
+      await get().fetchTeam();
+      return updatedMember;
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, team: error instanceof Error ? error.message : 'Unknown error' },
+      }));
+      throw error;
+    } finally {
+      set((state) => ({
+        loading: { ...state.loading, team: false },
+      }));
+    }
+  },
+  
+  deleteTeamMember: async (id) => {
+    set((state) => ({
+      loading: { ...state.loading, team: true },
+      errors: { ...state.errors, team: null },
+    }));
+    try {
+      const response = await fetch(`/api/team/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete team member');
+      set((state) => ({
+        teamMembers: state.teamMembers.filter((m) => m.id !== id),
+      }));
+      // Refresh team list
+      await get().fetchTeam();
+    } catch (error) {
+      set((state) => ({
+        errors: { ...state.errors, team: error instanceof Error ? error.message : 'Unknown error' },
+      }));
+      throw error;
+    } finally {
+      set((state) => ({
+        loading: { ...state.loading, team: false },
       }));
     }
   },
