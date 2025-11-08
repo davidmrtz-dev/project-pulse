@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell } from 'lucide-react';
+import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages } from 'lucide-react';
 import { useDarkMode } from './hooks/useDarkMode';
+import { useI18n } from './i18n/I18nProvider';
 import { Overview } from './components/Overview';
 import { ProjectsTable } from './components/ProjectsTable';
 import { TeamPerformance } from './components/TeamPerformance';
@@ -42,6 +43,8 @@ export default function App() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const { isDark, toggle } = useDarkMode();
+  const { t, language, setLanguage } = useI18n();
+  const [showLangMenu, setShowLangMenu] = useState(false);
 
   useEffect(() => {
     fetch('/api/kpis').then((r) => r.json()).then(setKpi);
@@ -57,10 +60,10 @@ export default function App() {
   };
 
   const tabs = [
-    { id: 'overview' as Tab, label: 'Overview', icon: LayoutDashboard },
-    { id: 'projects' as Tab, label: 'Projects', icon: FolderKanban },
-    { id: 'team' as Tab, label: 'Team', icon: Users },
-    { id: 'alerts' as Tab, label: 'Alerts', icon: Bell },
+    { id: 'overview' as Tab, label: t('tabs.overview'), icon: LayoutDashboard },
+    { id: 'projects' as Tab, label: t('tabs.projects'), icon: FolderKanban },
+    { id: 'team' as Tab, label: t('tabs.team'), icon: Users },
+    { id: 'alerts' as Tab, label: t('tabs.alerts'), icon: Bell },
   ];
 
   return (
@@ -71,11 +74,62 @@ export default function App() {
             <h1 className="text-xl font-semibold text-text-primary dark:text-text-primary-dark">
               Project Pulse
             </h1>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <Filters onFilterChange={handleFilterChange} />
               <div className="text-sm text-text-secondary dark:text-text-secondary-dark hidden sm:block">
-                Demo · Front-end only
+                {t('common.demo')}
               </div>
+              
+              {/* Language Selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowLangMenu(!showLangMenu)}
+                  className="p-2 rounded-lg hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors flex items-center gap-1"
+                  aria-label="Change language"
+                >
+                  <Languages className="w-5 h-5 text-text-secondary dark:text-text-secondary-dark" />
+                  <span className="text-xs font-medium text-text-secondary dark:text-text-secondary-dark uppercase">
+                    {language}
+                  </span>
+                </button>
+                {showLangMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowLangMenu(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-32 bg-bg-panel dark:bg-bg-panel-dark border border-border dark:border-border-dark rounded-lg shadow-lg z-20 overflow-hidden">
+                      <button
+                        onClick={() => {
+                          setLanguage('en');
+                          setShowLangMenu(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                          language === 'en'
+                            ? 'bg-primary/10 dark:bg-primary-dark/10 text-primary dark:text-primary-dark'
+                            : 'text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark'
+                        }`}
+                      >
+                        English
+                      </button>
+                      <button
+                        onClick={() => {
+                          setLanguage('es');
+                          setShowLangMenu(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                          language === 'es'
+                            ? 'bg-primary/10 dark:bg-primary-dark/10 text-primary dark:text-primary-dark'
+                            : 'text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark'
+                        }`}
+                      >
+                        Español
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+
               <button
                 onClick={toggle}
                 className="p-2 rounded-lg hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors"
