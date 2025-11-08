@@ -1,97 +1,125 @@
 import { useEffect, useState } from 'react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell } from 'lucide-react';
 import { useDarkMode } from './hooks/useDarkMode';
+import { Overview } from './components/Overview';
+import { ProjectsTable } from './components/ProjectsTable';
+import { TeamPerformance } from './components/TeamPerformance';
+import { Alerts } from './components/Alerts';
+import { Filters } from './components/Filters';
 
-type KPI = { throughput:number; cycleTimeDays:number; onTimeRate:number };
-type Point = { month:number; velocity:number; completion:number };
+type KPI = { throughput: number; cycleTimeDays: number; onTimeRate: number };
+type Point = { month: number; velocity: number; completion: number };
+type Project = {
+  id: string;
+  name: string;
+  owner: string;
+  progress: number;
+  status: 'on-track' | 'delayed' | 'blocked';
+  estimatedDate: string;
+  priority: 'high' | 'medium' | 'low';
+};
+type TeamMember = {
+  id: string;
+  name: string;
+  velocity: number;
+  onTimeRate: number;
+  weeklyProductivity: number;
+};
+type Alert = {
+  id: string;
+  type: 'warning' | 'error' | 'info';
+  message: string;
+  timestamp: string;
+};
+
+type Tab = 'overview' | 'projects' | 'team' | 'alerts';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [kpi, setKpi] = useState<KPI | null>(null);
   const [series, setSeries] = useState<Point[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const { isDark, toggle } = useDarkMode();
 
   useEffect(() => {
-    fetch('/api/kpis').then(r => r.json()).then(setKpi);
-    fetch('/api/series').then(r => r.json()).then(setSeries);
+    fetch('/api/kpis').then((r) => r.json()).then(setKpi);
+    fetch('/api/series').then((r) => r.json()).then(setSeries);
+    fetch('/api/projects').then((r) => r.json()).then(setProjects);
+    fetch('/api/team').then((r) => r.json()).then(setTeamMembers);
+    fetch('/api/alerts').then((r) => r.json()).then(setAlerts);
   }, []);
+
+  const handleFilterChange = (filters: any) => {
+    // Filter logic would go here
+    console.log('Filters changed:', filters);
+  };
+
+  const tabs = [
+    { id: 'overview' as Tab, label: 'Overview', icon: LayoutDashboard },
+    { id: 'projects' as Tab, label: 'Projects', icon: FolderKanban },
+    { id: 'team' as Tab, label: 'Team', icon: Users },
+    { id: 'alerts' as Tab, label: 'Alerts', icon: Bell },
+  ];
 
   return (
     <div className="min-h-screen bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark transition-colors duration-200">
-      <header className="sticky top-0 z-10 bg-bg-panel dark:bg-bg-panel-dark border-b border-border dark:border-border-dark shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-text-primary dark:text-text-primary-dark">Project Pulse</h1>
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-text-secondary dark:text-text-secondary-dark">Demo · Front-end only</div>
-            <button
-              onClick={toggle}
-              className="p-2 rounded-lg hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {isDark ? (
-                <Sun className="w-5 h-5 text-warning-dark" />
-              ) : (
-                <Moon className="w-5 h-5 text-text-secondary" />
-              )}
-            </button>
+      <header className="sticky top-0 z-20 bg-bg-panel dark:bg-bg-panel-dark border-b border-border dark:border-border-dark shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 py-3">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-xl font-semibold text-text-primary dark:text-text-primary-dark">
+              Project Pulse
+            </h1>
+            <div className="flex items-center gap-4">
+              <Filters onFilterChange={handleFilterChange} />
+              <div className="text-sm text-text-secondary dark:text-text-secondary-dark hidden sm:block">
+                Demo · Front-end only
+              </div>
+              <button
+                onClick={toggle}
+                className="p-2 rounded-lg hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors"
+                aria-label="Toggle dark mode"
+              >
+                {isDark ? (
+                  <Sun className="w-5 h-5 text-warning-dark" />
+                ) : (
+                  <Moon className="w-5 h-5 text-text-secondary" />
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* Tabs Navigation */}
+          <nav className="flex gap-1 -mb-3">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors ${
+                    isActive
+                      ? 'bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark border-t border-x border-border dark:border-border-dark'
+                      : 'text-text-secondary dark:text-text-secondary-dark hover:text-text-primary dark:hover:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
-        {/* KPIs */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <KpiCard label="Throughput" value={kpi?.throughput ?? '—'} suffix="/wk" />
-          <KpiCard label="Cycle Time" value={kpi?.cycleTimeDays ?? '—'} suffix="d" />
-          <KpiCard label="On-Time Rate" value={kpi ? `${Math.round(kpi.onTimeRate*100)}%` : '—'} />
-        </section>
-
-        {/* Chart */}
-        <section className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
-          <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">Velocity (Monthly)</h2>
-          <div className="h-72">
-            <ResponsiveContainer>
-              <LineChart data={series}>
-                <XAxis 
-                  dataKey="month" 
-                  stroke={isDark ? '#B0BEC5' : '#555555'}
-                  tick={{ fill: isDark ? '#B0BEC5' : '#555555' }}
-                />
-                <YAxis 
-                  stroke={isDark ? '#B0BEC5' : '#555555'}
-                  tick={{ fill: isDark ? '#B0BEC5' : '#555555' }}
-                />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: isDark ? '#132F4C' : '#FFFFFF',
-                    border: `1px solid ${isDark ? '#1E3A5F' : '#E0E0E0'}`,
-                    borderRadius: '0.5rem',
-                    color: isDark ? '#F5F5F5' : '#1E1E1E',
-                  }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="velocity" 
-                  stroke={isDark ? '#1565C0' : '#0D47A1'} 
-                  strokeWidth={2} 
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        {activeTab === 'overview' && <Overview kpi={kpi} series={series} />}
+        {activeTab === 'projects' && <ProjectsTable projects={projects} />}
+        {activeTab === 'team' && <TeamPerformance teamMembers={teamMembers} />}
+        {activeTab === 'alerts' && <Alerts alerts={alerts} />}
       </main>
-    </div>
-  );
-}
-
-function KpiCard({ label, value, suffix }: { label:string; value:string|number; suffix?:string }) {
-  return (
-    <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
-      <p className="text-sm text-text-secondary dark:text-text-secondary-dark">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-text-primary dark:text-text-primary-dark">
-        {value} <span className="text-text-secondary dark:text-text-secondary-dark align-middle text-sm">{suffix}</span>
-      </p>
     </div>
   );
 }
