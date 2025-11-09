@@ -24,13 +24,29 @@ export function BacklogGrowthChart({ data, previousData, loading, error, onRetry
     return <LoadingSpinner size="lg" />;
   }
 
+  // Combine data for comparison - merge current and previous data into single array
+  const combinedData = previousData && previousData.length > 0
+    ? data.map((item, index) => ({
+        month: item.month,
+        backlog: item.backlog,
+        completed: item.completed,
+        previousBacklog: previousData[index]?.backlog || 0,
+        previousCompleted: previousData[index]?.completed || 0,
+      }))
+    : data;
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart
-        data={data}
+        data={combinedData}
         onClick={(chartData) => {
           if (chartData && chartData.activePayload && chartData.activePayload[0] && onDataPointClick) {
-            onDataPointClick(chartData.activePayload[0].payload);
+            const payload = chartData.activePayload[0].payload;
+            onDataPointClick({
+              month: payload.month,
+              backlog: payload.backlog || 0,
+              completed: payload.completed || 0,
+            });
           }
         }}
         style={{ cursor: onDataPointClick ? 'pointer' : 'default' }}
@@ -76,8 +92,7 @@ export function BacklogGrowthChart({ data, previousData, loading, error, onRetry
           <>
             <Area
               type="monotone"
-              dataKey="backlog"
-              data={previousData}
+              dataKey="previousBacklog"
               fill={isDark ? '#FFAB91' : '#FFAB91'}
               fillOpacity={0.2}
               stroke={isDark ? '#FFAB91' : '#FFAB91'}
@@ -86,8 +101,7 @@ export function BacklogGrowthChart({ data, previousData, loading, error, onRetry
             />
             <Line
               type="monotone"
-              dataKey="completed"
-              data={previousData}
+              dataKey="previousCompleted"
               stroke={isDark ? '#80DEEA' : '#80DEEA'}
               strokeWidth={2}
               strokeDasharray="5 5"
