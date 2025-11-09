@@ -22,7 +22,7 @@ export function ConfirmDeleteModal({
   loading = false,
 }: ConfirmDeleteModalProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode();
 
   const handleConfirm = () => {
     onConfirm();
@@ -35,12 +35,12 @@ export function ConfirmDeleteModal({
       title={title}
       maxWidth="md"
       footer={
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 rounded-lg border border-border dark:border-border-dark text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors disabled:opacity-50"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg border border-border dark:border-border-dark text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors disabled:opacity-50"
           >
             {t('common.cancel')}
           </button>
@@ -48,7 +48,7 @@ export function ConfirmDeleteModal({
             type="button"
             onClick={handleConfirm}
             disabled={loading}
-            className="px-4 py-2 rounded-lg bg-error dark:bg-error-dark text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-error dark:bg-error-dark text-white hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {loading ? t('common.loading') : t('common.delete')}
           </button>

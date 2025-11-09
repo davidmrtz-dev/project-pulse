@@ -133,12 +133,12 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
       title={title}
       maxWidth="lg"
       footer={
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 rounded-lg border border-border dark:border-border-dark text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors disabled:opacity-50"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg border border-border dark:border-border-dark text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors disabled:opacity-50"
           >
             {t('common.cancel')}
           </button>
@@ -146,7 +146,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
             type="submit"
             form="team-member-form"
             disabled={loading}
-            className="px-4 py-2 rounded-lg bg-primary dark:bg-primary-dark text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-primary dark:bg-primary-dark text-white hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {loading ? t('common.loading') : isEditing ? t('common.save') : t('common.create')}
           </button>
@@ -162,6 +162,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
             type="text"
             value={formData.name}
             onChange={(e) => handleChange('name', e.target.value)}
+            onFocus={(e) => e.target.select()}
             className={`w-full px-3 py-2 rounded-lg border ${
               errors.name
                 ? 'border-error dark:border-error-dark'
@@ -174,7 +175,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
               {t('team.member.velocity')}
@@ -186,6 +187,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
               step="0.1"
               value={formData.velocity}
               onChange={(e) => handleChange('velocity', parseFloat(e.target.value) || 0)}
+              onFocus={(e) => e.target.select()}
               className={`w-full px-3 py-2 rounded-lg border ${
                 errors.velocity
                   ? 'border-error dark:border-error-dark'
@@ -208,6 +210,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
               step="0.01"
               value={formData.onTimeRate}
               onChange={(e) => handleChange('onTimeRate', parseFloat(e.target.value) || 0)}
+              onFocus={(e) => e.target.select()}
               className={`w-full px-3 py-2 rounded-lg border ${
                 errors.onTimeRate
                   ? 'border-error dark:border-error-dark'
@@ -220,7 +223,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
               {t('team.member.productivity')}
@@ -231,6 +234,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
               step="0.1"
               value={formData.weeklyProductivity}
               onChange={(e) => handleChange('weeklyProductivity', parseFloat(e.target.value) || 0)}
+              onFocus={(e) => e.target.select()}
               className={`w-full px-3 py-2 rounded-lg border ${
                 errors.weeklyProductivity
                   ? 'border-error dark:border-error-dark'
@@ -251,6 +255,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
               min="0"
               value={formData.activeProjects}
               onChange={(e) => handleChange('activeProjects', parseInt(e.target.value) || 0)}
+              onFocus={(e) => e.target.select()}
               className={`w-full px-3 py-2 rounded-lg border ${
                 errors.activeProjects
                   ? 'border-error dark:border-error-dark'
