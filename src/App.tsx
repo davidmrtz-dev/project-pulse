@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages, Download } from 'lucide-react';
+import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages, Download, Info } from 'lucide-react';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useI18n } from './i18n/I18nProvider';
 import { useStore } from './store/useStore';
@@ -7,6 +7,7 @@ import { Overview } from './components/Overview';
 import { ProjectsTable } from './components/ProjectsTable';
 import { TeamPerformance } from './components/TeamPerformance';
 import { Alerts } from './components/Alerts';
+import { About } from './components/About';
 import { Filters } from './components/Filters';
 import { ToastContainer } from './components/Toast';
 import {
@@ -184,6 +185,7 @@ export default function App() {
     { id: 'projects' as const, label: t('tabs.projects'), icon: FolderKanban },
     { id: 'team' as const, label: t('tabs.team'), icon: Users },
     { id: 'alerts' as const, label: t('tabs.alerts'), icon: Bell },
+    { id: 'about' as const, label: t('tabs.about'), icon: Info },
   ];
 
   return (
@@ -414,6 +416,7 @@ export default function App() {
             onRetry={fetchAlerts}
           />
         )}
+        {activeTab === 'about' && <About />}
       </main>
       <ToastContainer />
     </div>

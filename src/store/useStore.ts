@@ -38,7 +38,7 @@ interface AppState {
   teamWorkload: TeamWorkload[];
   
   // UI State
-  activeTab: 'overview' | 'projects' | 'team' | 'alerts';
+  activeTab: 'overview' | 'projects' | 'team' | 'alerts' | 'about';
   filters: FilterState;
   comparePeriod: boolean; // Enable/disable period comparison
   
