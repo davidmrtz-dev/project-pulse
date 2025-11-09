@@ -22,9 +22,7 @@ type TrendIndicator = {
 function calculateTrend(current: number, previous: number | null | undefined, invert: boolean = false): TrendIndicator | null {
   if (previous === null || previous === undefined) return null;
   
-  // Handle division by zero or very small values
   if (Math.abs(previous) < 0.01) {
-    // If previous is essentially zero, any positive current value is an improvement
     if (current > 0.01) {
       return {
         value: 100,
@@ -37,7 +35,7 @@ function calculateTrend(current: number, previous: number | null | undefined, in
   
   const change = ((current - previous) / previous) * 100;
   const isPositive = invert ? change < 0 : change > 0;
-  const isNeutral = Math.abs(change) < 0.1; // Less than 0.1% change is considered neutral
+  const isNeutral = Math.abs(change) < 0.1;
   
   return {
     value: Math.abs(change),
@@ -61,10 +59,8 @@ function KpiCard({
   invertTrend?: boolean;
   showTrend?: boolean;
 }) {
-  // Extract numeric value for trend calculation
   const numericValue = typeof value === 'number' ? value : (typeof value === 'string' && value !== '—' ? parseFloat(value.replace('%', '')) : null);
   
-  // Only calculate trend if showTrend is true and we have previous value
   const trend = showTrend && numericValue !== null && previousValue !== undefined && previousValue !== null
     ? calculateTrend(numericValue, previousValue, invertTrend)
     : null;
@@ -181,19 +177,15 @@ export function Overview({
   const [drillDownData, setDrillDownData] = useState<DrillDownData | null>(null);
   const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
 
-  // Fetch previous period data when comparison is enabled, clear when disabled
   useEffect(() => {
     if (comparePeriod && onFetchPrevious) {
       onFetchPrevious.kpi?.();
       onFetchPrevious.series?.();
       onFetchPrevious.weeklyTrends?.();
       onFetchPrevious.backlogGrowth?.();
-    } else if (!comparePeriod) {
-      // Clear previous period data when comparison is disabled
-      // This is handled by the store when comparePeriod is toggled
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [comparePeriod]); // Only depend on comparePeriod to avoid infinite loop
+  }, [comparePeriod]);
 
   const handleChartClick = (type: 'velocity' | 'completion' | 'backlog' | 'weekly', payload: any) => {
     if (!payload) return;
@@ -271,7 +263,6 @@ export function Overview({
     }
   };
 
-  // Show error if KPI failed
   if (errors?.kpi) {
     return (
       <div className="space-y-6">
@@ -282,7 +273,6 @@ export function Overview({
 
   return (
     <div className="space-y-6">
-      {/* Header with Comparison Toggle */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-text-primary dark:text-text-primary-dark">
           {t('overview.title')}
@@ -301,7 +291,6 @@ export function Overview({
         </label>
       </div>
 
-      {/* KPIs */}
       <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {loading?.kpi ? (
           <>
@@ -358,9 +347,7 @@ export function Overview({
         )}
       </section>
 
-      {/* Charts Grid - First Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Velocity Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
             {t('overview.charts.velocity')}
@@ -426,7 +413,6 @@ export function Overview({
           </div>
         </div>
 
-        {/* Completion Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
             {t('overview.charts.completion')}
@@ -491,9 +477,7 @@ export function Overview({
         </div>
       </div>
 
-      {/* Charts Grid - Second Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Backlog Growth Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
             {t('overview.charts.backlogGrowth')}
@@ -510,7 +494,6 @@ export function Overview({
           </div>
         </div>
 
-        {/* Weekly Trends Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
             {t('overview.charts.weeklyTrends')}
@@ -528,9 +511,7 @@ export function Overview({
         </div>
       </div>
 
-      {/* Charts Grid - Third Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Task Status Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
             {t('overview.charts.taskStatus')}
@@ -545,7 +526,6 @@ export function Overview({
           </div>
         </div>
 
-        {/* Project Status Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
             {t('overview.charts.projectStatus')}
@@ -560,7 +540,6 @@ export function Overview({
           </div>
         </div>
 
-        {/* Team Workload Chart */}
         <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-4 border border-border dark:border-border-dark">
           <h2 className="text-base font-medium mb-4 text-text-primary dark:text-text-primary-dark">
             {t('overview.charts.teamWorkload')}
@@ -576,7 +555,6 @@ export function Overview({
         </div>
       </div>
 
-      {/* Drill Down Modal */}
       <DrillDownModal
         isOpen={isDrillDownOpen}
         onClose={() => {

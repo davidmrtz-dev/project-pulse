@@ -86,7 +86,6 @@ export function About() {
 
   return (
     <div className="space-y-8">
-      {/* Hero Section */}
       <div className="bg-bg-panel dark:bg-bg-panel-dark rounded-2xl shadow-sm p-8 border border-border dark:border-border-dark">
         <div className="flex items-start gap-4">
           <div className="p-3 rounded-lg bg-primary/10 dark:bg-primary-dark/10">
@@ -106,7 +105,6 @@ export function About() {
         </div>
       </div>
 
-      {/* Features Grid */}
       <div>
         <h2 className="text-2xl font-semibold text-text-primary dark:text-text-primary-dark mb-6 flex items-center gap-2">
           <Zap className="w-6 h-6 text-primary dark:text-primary-dark" />
@@ -137,7 +135,6 @@ export function About() {
         </div>
       </div>
 
-      {/* Tech Stack */}
       <div>
         <h2 className="text-2xl font-semibold text-text-primary dark:text-text-primary-dark mb-6 flex items-center gap-2">
           <Package className="w-6 h-6 text-primary dark:text-primary-dark" />
@@ -167,7 +164,6 @@ export function About() {
         </div>
       </div>
 
-      {/* Goals */}
       <div>
         <h2 className="text-2xl font-semibold text-text-primary dark:text-text-primary-dark mb-6 flex items-center gap-2">
           <Target className="w-6 h-6 text-primary dark:text-primary-dark" />
@@ -185,7 +181,6 @@ export function About() {
         </div>
       </div>
 
-      {/* Architecture */}
       <div>
         <h2 className="text-2xl font-semibold text-text-primary dark:text-text-primary-dark mb-6 flex items-center gap-2">
           <Layers className="w-6 h-6 text-primary dark:text-primary-dark" />
@@ -208,7 +203,6 @@ export function About() {
         </div>
       </div>
 
-      {/* Best Practices */}
       <div>
         <h2 className="text-2xl font-semibold text-text-primary dark:text-text-primary-dark mb-6 flex items-center gap-2">
           <CheckCircle2 className="w-6 h-6 text-primary dark:text-primary-dark" />

@@ -11,12 +11,12 @@ import type { Project } from '../../types';
 type ProjectFormModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  project?: Project | null; // If provided, we're editing; otherwise, creating
+  project?: Project | null;
 };
 
 export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode();
   const { createProject, updateProject, teamMembers } = useStore();
   const { addToast } = useNotifications();
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
 
   const isEditing = !!project;
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     owner: '',
@@ -37,7 +36,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
     startDate: '',
   });
 
-  // Initialize form when project changes
   useEffect(() => {
     if (project) {
       setFormData({
@@ -52,7 +50,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
         startDate: project.startDate ?? new Date().toISOString().split('T')[0],
       });
     } else {
-      // Reset form for new project
       setFormData({
         name: '',
         owner: teamMembers[0]?.name ?? '',
@@ -70,7 +67,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -85,12 +81,10 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
     setLoading(true);
     setErrors({});
 
-    // Validate
     const validation = validateProject(formData);
     if (!validation.isValid) {
       const errorMap: Record<string, string> = {};
       validation.errors.forEach((err: ValidationError) => {
-        // Translate validation error messages
         const fieldName = t(`projects.columns.${err.field}`) || err.field;
         let translatedMessage = t(err.message, { field: fieldName });
         errorMap[err.field] = translatedMessage;
@@ -155,7 +149,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
       }
     >
       <form id="project-form" onSubmit={handleSubmit} className="space-y-4">
-        {/* Name */}
         <div>
           <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
             {t('projects.columns.name')} <span className="text-error dark:text-error-dark">*</span>
@@ -176,7 +169,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           )}
         </div>
 
-        {/* Owner */}
         <div>
           <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
             {t('projects.columns.owner')} <span className="text-error dark:text-error-dark">*</span>
@@ -202,7 +194,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           )}
         </div>
 
-        {/* Status and Priority */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
@@ -235,7 +226,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           </div>
         </div>
 
-        {/* Dates */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
@@ -270,7 +260,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           </div>
         </div>
 
-        {/* Progress */}
         <div>
           <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
             {t('projects.columns.progress')} (%)
@@ -292,7 +281,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           )}
         </div>
 
-        {/* Tasks */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">

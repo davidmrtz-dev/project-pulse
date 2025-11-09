@@ -32,7 +32,7 @@ type AlertsProps = {
 
 export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode();
 
   if (error) {
     return <ErrorCard message={error} onRetry={onRetry} />;
@@ -66,7 +66,6 @@ export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
           const Icon = alertIcons[alert.type];
           const timeAgo = getTimeAgo(new Date(alert.timestamp), t);
           
-          // Translate alert message if it's a translation key
           const translatedMessage = alert.message.startsWith('alerts.messages.')
             ? t(alert.message, alert.messageParams)
             : alert.message;

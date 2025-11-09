@@ -82,7 +82,7 @@ interface AppState {
   setTaskStatus: (data: TaskStatus[]) => void;
   setProjectStatus: (data: ProjectStatus[]) => void;
   setTeamWorkload: (data: TeamWorkload[]) => void;
-  setActiveTab: (tab: 'overview' | 'projects' | 'team' | 'alerts') => void;
+  setActiveTab: (tab: 'overview' | 'projects' | 'team' | 'alerts' | 'about') => void;
   setFilters: (filters: FilterState) => void;
   setComparePeriod: (comparePeriod: boolean) => void;
   setLoading: (key: keyof AppState['loading'], value: boolean) => void;

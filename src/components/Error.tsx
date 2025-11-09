@@ -10,9 +10,8 @@ type ErrorProps = {
 
 export function ErrorMessage({ message, onRetry, className = '' }: ErrorProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode();
 
-  // Translate error message if it's a translation key (starts with "errors." or "validation.")
   const translatedMessage = message 
     ? (message.startsWith('errors.') || message.startsWith('validation.') 
         ? t(message) 

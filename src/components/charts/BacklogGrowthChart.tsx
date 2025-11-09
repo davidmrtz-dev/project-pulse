@@ -24,7 +24,6 @@ export function BacklogGrowthChart({ data, previousData, loading, error, onRetry
     return <LoadingSpinner size="lg" />;
   }
 
-  // Combine data for comparison - merge current and previous data into single array
   const combinedData = previousData && previousData.length > 0
     ? data.map((item, index) => ({
         month: item.month,

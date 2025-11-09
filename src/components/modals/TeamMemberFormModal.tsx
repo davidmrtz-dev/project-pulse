@@ -10,12 +10,12 @@ import type { TeamMember } from '../../types';
 type TeamMemberFormModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  member?: TeamMember | null; // If provided, we're editing; otherwise, creating
+  member?: TeamMember | null;
 };
 
 export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormModalProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode();
   const { createTeamMember, updateTeamMember } = useStore();
   const { addToast } = useNotifications();
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,6 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
 
   const isEditing = !!member;
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     velocity: 0,
@@ -32,7 +31,6 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
     activeProjects: 0,
   });
 
-  // Initialize form when member changes
   useEffect(() => {
     if (member) {
       setFormData({
@@ -43,7 +41,6 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
         activeProjects: member.activeProjects ?? 0,
       });
     } else {
-      // Reset form for new member
       setFormData({
         name: '',
         velocity: 0,
@@ -57,7 +54,6 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -158,7 +154,6 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
       }
     >
       <form id="team-member-form" onSubmit={handleSubmit} className="space-y-4">
-        {/* Name */}
         <div>
           <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
             {t('team.member.name')} <span className="text-error dark:text-error-dark">*</span>
@@ -179,7 +174,6 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
           )}
         </div>
 
-        {/* Velocity and On-Time Rate */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
@@ -226,7 +220,6 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
           </div>
         </div>
 
-        {/* Weekly Productivity and Active Projects */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
