@@ -5,6 +5,7 @@ import { useDarkMode } from '../../hooks/useDarkMode';
 import { useStore } from '../../store/useStore';
 import { useNotifications } from '../../lib/notifications';
 import { validateProject, type ValidationError } from '../../lib/validation';
+import { getErrorMessage } from '../../lib/errors';
 import type { Project } from '../../types';
 
 type ProjectFormModalProps = {
@@ -89,7 +90,10 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
     if (!validation.isValid) {
       const errorMap: Record<string, string> = {};
       validation.errors.forEach((err: ValidationError) => {
-        errorMap[err.field] = err.message;
+        // Translate validation error messages
+        const fieldName = t(`projects.columns.${err.field}`) || err.field;
+        let translatedMessage = t(err.message, { field: fieldName });
+        errorMap[err.field] = translatedMessage;
       });
       setErrors(errorMap);
       setLoading(false);
@@ -114,7 +118,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
     } catch (error) {
       addToast({
         type: 'error',
-        message: error instanceof Error ? error.message : t('common.error'),
+        message: getErrorMessage(error, t),
       });
     } finally {
       setLoading(false);

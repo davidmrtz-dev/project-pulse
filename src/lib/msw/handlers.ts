@@ -102,9 +102,9 @@ function getNextTeamMemberId(): string {
 }
 
 const alerts = [
-  { id: '1', type: 'warning', message: '2 proyectos en riesgo de retraso', timestamp: new Date().toISOString() },
-  { id: '2', type: 'error', message: 'Baja velocidad sostenida en el último sprint', timestamp: new Date(Date.now() - 3600000).toISOString() },
-  { id: '3', type: 'info', message: 'Nuevo proyecto agregado: Content Migration', timestamp: new Date(Date.now() - 7200000).toISOString() },
+  { id: '1', type: 'warning', message: 'alerts.messages.projectsAtRisk', messageParams: { count: 2 }, timestamp: new Date().toISOString() },
+  { id: '2', type: 'error', message: 'alerts.messages.lowVelocity', timestamp: new Date(Date.now() - 3600000).toISOString() },
+  { id: '3', type: 'info', message: 'alerts.messages.newProject', messageParams: { projectName: 'Content Migration' }, timestamp: new Date(Date.now() - 7200000).toISOString() },
 ];
 
 export const handlers = [

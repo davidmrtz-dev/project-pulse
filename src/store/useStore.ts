@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { createError } from '../lib/errors';
 import type {
   KPI,
   Point,
@@ -206,7 +207,7 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch(`/api/kpis?period=${period}`);
-      if (!response.ok) throw new Error('Failed to fetch KPIs');
+      if (!response.ok) throw createError('errors.fetchKpi');
       const data = await response.json();
       if (period === 'previous') {
         set({ previousKpi: data });
@@ -215,7 +216,7 @@ export const useStore = create<AppState>((set, get) => ({
       }
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, kpi: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, kpi: error instanceof Error ? error.message : 'errors.fetchKpi' },
       }));
     } finally {
       set((state) => ({
@@ -231,7 +232,7 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch(`/api/series?period=${period}`);
-      if (!response.ok) throw new Error('Failed to fetch series');
+      if (!response.ok) throw createError('errors.fetchSeries');
       const data = await response.json();
       if (period === 'previous') {
         set({ previousSeries: data });
@@ -240,7 +241,7 @@ export const useStore = create<AppState>((set, get) => ({
       }
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, series: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, series: error instanceof Error ? error.message : 'errors.fetchSeries' },
       }));
     } finally {
       set((state) => ({
@@ -256,12 +257,12 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch('/api/projects');
-      if (!response.ok) throw new Error('Failed to fetch projects');
+      if (!response.ok) throw createError('errors.fetchProjects');
       const data = await response.json();
       set({ projects: data });
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'errors.fetchProjects' },
       }));
     } finally {
       set((state) => ({
@@ -277,12 +278,12 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch('/api/team');
-      if (!response.ok) throw new Error('Failed to fetch team');
+      if (!response.ok) throw createError('errors.fetchTeam');
       const data = await response.json();
       set({ teamMembers: data });
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, team: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, team: error instanceof Error ? error.message : 'errors.fetchTeam' },
       }));
     } finally {
       set((state) => ({
@@ -298,12 +299,12 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch('/api/alerts');
-      if (!response.ok) throw new Error('Failed to fetch alerts');
+      if (!response.ok) throw createError('errors.fetchAlerts');
       const data = await response.json();
       set({ alerts: data });
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, alerts: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, alerts: error instanceof Error ? error.message : 'errors.fetchAlerts' },
       }));
     } finally {
       set((state) => ({
@@ -319,7 +320,7 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch(`/api/weekly-trends?period=${period}`);
-      if (!response.ok) throw new Error('Failed to fetch weekly trends');
+      if (!response.ok) throw createError('errors.fetchWeeklyTrends');
       const data = await response.json();
       if (period === 'previous') {
         set({ previousWeeklyTrends: data });
@@ -328,7 +329,7 @@ export const useStore = create<AppState>((set, get) => ({
       }
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, weeklyTrends: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, weeklyTrends: error instanceof Error ? error.message : 'errors.fetchWeeklyTrends' },
       }));
     } finally {
       set((state) => ({
@@ -344,7 +345,7 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch(`/api/backlog-growth?period=${period}`);
-      if (!response.ok) throw new Error('Failed to fetch backlog growth');
+      if (!response.ok) throw createError('errors.fetchBacklogGrowth');
       const data = await response.json();
       if (period === 'previous') {
         set({ previousBacklogGrowth: data });
@@ -353,7 +354,7 @@ export const useStore = create<AppState>((set, get) => ({
       }
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, backlogGrowth: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, backlogGrowth: error instanceof Error ? error.message : 'errors.fetchBacklogGrowth' },
       }));
     } finally {
       set((state) => ({
@@ -369,12 +370,12 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch('/api/task-status');
-      if (!response.ok) throw new Error('Failed to fetch task status');
+      if (!response.ok) throw createError('errors.fetchTaskStatus');
       const data = await response.json();
       set({ taskStatus: data });
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, taskStatus: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, taskStatus: error instanceof Error ? error.message : 'errors.fetchTaskStatus' },
       }));
     } finally {
       set((state) => ({
@@ -390,12 +391,12 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch('/api/project-status');
-      if (!response.ok) throw new Error('Failed to fetch project status');
+      if (!response.ok) throw createError('errors.fetchProjectStatus');
       const data = await response.json();
       set({ projectStatus: data });
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, projectStatus: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, projectStatus: error instanceof Error ? error.message : 'errors.fetchProjectStatus' },
       }));
     } finally {
       set((state) => ({
@@ -411,12 +412,12 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     try {
       const response = await fetch('/api/team-workload');
-      if (!response.ok) throw new Error('Failed to fetch team workload');
+      if (!response.ok) throw createError('errors.fetchTeamWorkload');
       const data = await response.json();
       set({ teamWorkload: data });
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, teamWorkload: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, teamWorkload: error instanceof Error ? error.message : 'errors.fetchTeamWorkload' },
       }));
     } finally {
       set((state) => ({
@@ -464,7 +465,7 @@ export const useStore = create<AppState>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(projectData),
       });
-      if (!response.ok) throw new Error('Failed to create project');
+      if (!response.ok) throw createError('errors.createProject');
       const newProject = await response.json();
       set((state) => ({
         projects: [...state.projects, newProject],
@@ -474,7 +475,7 @@ export const useStore = create<AppState>((set, get) => ({
       return newProject;
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'errors.createProject' },
       }));
       throw error;
     } finally {
@@ -495,7 +496,7 @@ export const useStore = create<AppState>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(projectData),
       });
-      if (!response.ok) throw new Error('Failed to update project');
+      if (!response.ok) throw createError('errors.updateProject');
       const updatedProject = await response.json();
       set((state) => ({
         projects: state.projects.map((p) => (p.id === id ? updatedProject : p)),
@@ -505,7 +506,7 @@ export const useStore = create<AppState>((set, get) => ({
       return updatedProject;
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'errors.updateProject' },
       }));
       throw error;
     } finally {
@@ -524,7 +525,7 @@ export const useStore = create<AppState>((set, get) => ({
       const response = await fetch(`/api/projects/${id}`, {
         method: 'DELETE',
       });
-      if (!response.ok) throw new Error('Failed to delete project');
+      if (!response.ok) throw createError('errors.deleteProject');
       set((state) => ({
         projects: state.projects.filter((p) => p.id !== id),
       }));
@@ -532,7 +533,7 @@ export const useStore = create<AppState>((set, get) => ({
       await get().fetchProjects();
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, projects: error instanceof Error ? error.message : 'errors.deleteProject' },
       }));
       throw error;
     } finally {
@@ -554,7 +555,7 @@ export const useStore = create<AppState>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(memberData),
       });
-      if (!response.ok) throw new Error('Failed to create team member');
+      if (!response.ok) throw createError('errors.createTeamMember');
       const newMember = await response.json();
       set((state) => ({
         teamMembers: [...state.teamMembers, newMember],
@@ -564,7 +565,7 @@ export const useStore = create<AppState>((set, get) => ({
       return newMember;
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, team: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, team: error instanceof Error ? error.message : 'errors.createTeamMember' },
       }));
       throw error;
     } finally {
@@ -585,7 +586,7 @@ export const useStore = create<AppState>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(memberData),
       });
-      if (!response.ok) throw new Error('Failed to update team member');
+      if (!response.ok) throw createError('errors.updateTeamMember');
       const updatedMember = await response.json();
       set((state) => ({
         teamMembers: state.teamMembers.map((m) => (m.id === id ? updatedMember : m)),
@@ -595,7 +596,7 @@ export const useStore = create<AppState>((set, get) => ({
       return updatedMember;
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, team: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, team: error instanceof Error ? error.message : 'errors.updateTeamMember' },
       }));
       throw error;
     } finally {
@@ -614,7 +615,7 @@ export const useStore = create<AppState>((set, get) => ({
       const response = await fetch(`/api/team/${id}`, {
         method: 'DELETE',
       });
-      if (!response.ok) throw new Error('Failed to delete team member');
+      if (!response.ok) throw createError('errors.deleteTeamMember');
       set((state) => ({
         teamMembers: state.teamMembers.filter((m) => m.id !== id),
       }));
@@ -622,7 +623,7 @@ export const useStore = create<AppState>((set, get) => ({
       await get().fetchTeam();
     } catch (error) {
       set((state) => ({
-        errors: { ...state.errors, team: error instanceof Error ? error.message : 'Unknown error' },
+        errors: { ...state.errors, team: error instanceof Error ? error.message : 'errors.deleteTeamMember' },
       }));
       throw error;
     } finally {

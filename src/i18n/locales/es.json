@@ -20,7 +20,36 @@
     "exportProjects": "Exportar Proyectos",
     "exportTeam": "Exportar Equipo",
     "exportAlerts": "Exportar Alertas",
-    "exportAll": "Exportar Todos los Datos"
+    "exportAll": "Exportar Todos los Datos",
+    "unknownError": "Error desconocido"
+  },
+  "errors": {
+    "fetchKpi": "Error al cargar los KPIs",
+    "fetchSeries": "Error al cargar las series",
+    "fetchProjects": "Error al cargar los proyectos",
+    "fetchTeam": "Error al cargar el equipo",
+    "fetchAlerts": "Error al cargar las alertas",
+    "fetchWeeklyTrends": "Error al cargar las tendencias semanales",
+    "fetchBacklogGrowth": "Error al cargar el crecimiento del backlog",
+    "fetchTaskStatus": "Error al cargar el estado de las tareas",
+    "fetchProjectStatus": "Error al cargar el estado de los proyectos",
+    "fetchTeamWorkload": "Error al cargar la carga de trabajo del equipo",
+    "createProject": "Error al crear el proyecto",
+    "updateProject": "Error al actualizar el proyecto",
+    "deleteProject": "Error al eliminar el proyecto",
+    "createTeamMember": "Error al crear el miembro del equipo",
+    "updateTeamMember": "Error al actualizar el miembro del equipo",
+    "deleteTeamMember": "Error al eliminar el miembro del equipo"
+  },
+  "validation": {
+    "required": "{field} es requerido",
+    "range": "{field} debe estar entre {min} y {max}",
+    "date": "{field} debe ser una fecha válida",
+    "email": "{field} debe ser un email válido",
+    "positive": "{field} debe ser un número positivo",
+    "tasksTotalPositive": "El total de tareas debe ser un número positivo",
+    "tasksCompletedPositive": "Las tareas completadas deben ser un número positivo",
+    "tasksExceedTotal": "Las tareas completadas no pueden exceder el total de tareas"
   },
   "tabs": {
     "overview": "Resumen",
@@ -119,9 +148,9 @@
     "title": "Alertas y Notificaciones",
     "noAlerts": "No hay alertas en este momento",
     "messages": {
-      "projectsAtRisk": "proyectos en riesgo de retraso",
+      "projectsAtRisk": "{count} proyectos en riesgo de retraso",
       "lowVelocity": "Baja velocidad sostenida en el último sprint",
-      "newProject": "Nuevo proyecto agregado:"
+      "newProject": "Nuevo proyecto agregado: {projectName}"
     }
   },
   "filters": {

@@ -70,6 +70,7 @@ export type Alert = {
   id: string;
   type: 'warning' | 'error' | 'info';
   message: string;
+  messageParams?: Record<string, string | number>;
   timestamp: string;
 };
 

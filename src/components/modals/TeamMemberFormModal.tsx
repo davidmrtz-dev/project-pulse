@@ -4,6 +4,7 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { useDarkMode } from '../../hooks/useDarkMode';
 import { useStore } from '../../store/useStore';
 import { useNotifications } from '../../lib/notifications';
+import { getErrorMessage } from '../../lib/errors';
 import type { TeamMember } from '../../types';
 
 type TeamMemberFormModalProps = {
@@ -120,7 +121,7 @@ export function TeamMemberFormModal({ isOpen, onClose, member }: TeamMemberFormM
     } catch (error) {
       addToast({
         type: 'error',
-        message: error instanceof Error ? error.message : t('common.error'),
+        message: getErrorMessage(error, t),
       });
     } finally {
       setLoading(false);

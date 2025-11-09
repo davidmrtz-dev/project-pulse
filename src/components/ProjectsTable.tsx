@@ -12,6 +12,7 @@ import { useDarkMode } from '../hooks/useDarkMode';
 import { useI18n } from '../i18n/I18nProvider';
 import { useStore } from '../store/useStore';
 import { useNotifications } from '../lib/notifications';
+import { getErrorMessage } from '../lib/errors';
 import { SkeletonTableRow } from './Loading';
 import { ErrorCard } from './Error';
 import { ProjectFormModal } from './modals/ProjectFormModal';
@@ -96,7 +97,7 @@ export function ProjectsTable({ projects, loading, error, onRetry }: ProjectsTab
     } catch (error) {
       addToast({
         type: 'error',
-        message: error instanceof Error ? error.message : t('common.error'),
+        message: getErrorMessage(error, t),
       });
     } finally {
       setDeleting(false);

@@ -20,7 +20,36 @@
     "exportProjects": "Export Projects",
     "exportTeam": "Export Team",
     "exportAlerts": "Export Alerts",
-    "exportAll": "Export All Data"
+    "exportAll": "Export All Data",
+    "unknownError": "Unknown error"
+  },
+  "errors": {
+    "fetchKpi": "Failed to fetch KPIs",
+    "fetchSeries": "Failed to fetch series",
+    "fetchProjects": "Failed to fetch projects",
+    "fetchTeam": "Failed to fetch team",
+    "fetchAlerts": "Failed to fetch alerts",
+    "fetchWeeklyTrends": "Failed to fetch weekly trends",
+    "fetchBacklogGrowth": "Failed to fetch backlog growth",
+    "fetchTaskStatus": "Failed to fetch task status",
+    "fetchProjectStatus": "Failed to fetch project status",
+    "fetchTeamWorkload": "Failed to fetch team workload",
+    "createProject": "Failed to create project",
+    "updateProject": "Failed to update project",
+    "deleteProject": "Failed to delete project",
+    "createTeamMember": "Failed to create team member",
+    "updateTeamMember": "Failed to update team member",
+    "deleteTeamMember": "Failed to delete team member"
+  },
+  "validation": {
+    "required": "{field} is required",
+    "range": "{field} must be between {min} and {max}",
+    "date": "{field} must be a valid date",
+    "email": "{field} must be a valid email",
+    "positive": "{field} must be a positive number",
+    "tasksTotalPositive": "Total tasks must be a positive number",
+    "tasksCompletedPositive": "Completed tasks must be a positive number",
+    "tasksExceedTotal": "Completed tasks cannot exceed total tasks"
   },
   "tabs": {
     "overview": "Overview",
@@ -119,9 +148,9 @@
     "title": "Alerts & Notifications",
     "noAlerts": "No alerts at this time",
     "messages": {
-      "projectsAtRisk": "projects at risk of delay",
+      "projectsAtRisk": "{count} projects at risk of delay",
       "lowVelocity": "Sustained low velocity in the last sprint",
-      "newProject": "New project added:"
+      "newProject": "New project added: {projectName}"
     }
   },
   "filters": {
