@@ -5,17 +5,18 @@ import { useDarkMode } from '../../hooks/useDarkMode';
 import { useStore } from '../../store/useStore';
 import { useNotifications } from '../../lib/notifications';
 import { validateProject, type ValidationError } from '../../lib/validation';
+import { getErrorMessage } from '../../lib/errors';
 import type { Project } from '../../types';
 
 type ProjectFormModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  project?: Project | null; // If provided, we're editing; otherwise, creating
+  project?: Project | null;
 };
 
 export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode();
   const { createProject, updateProject, teamMembers } = useStore();
   const { addToast } = useNotifications();
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
 
   const isEditing = !!project;
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     owner: '',
@@ -36,7 +36,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
     startDate: '',
   });
 
-  // Initialize form when project changes
   useEffect(() => {
     if (project) {
       setFormData({
@@ -51,7 +50,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
         startDate: project.startDate ?? new Date().toISOString().split('T')[0],
       });
     } else {
-      // Reset form for new project
       setFormData({
         name: '',
         owner: teamMembers[0]?.name ?? '',
@@ -69,7 +67,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -84,12 +81,13 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
     setLoading(true);
     setErrors({});
 
-    // Validate
     const validation = validateProject(formData);
     if (!validation.isValid) {
       const errorMap: Record<string, string> = {};
       validation.errors.forEach((err: ValidationError) => {
-        errorMap[err.field] = err.message;
+        const fieldName = t(`projects.columns.${err.field}`) || err.field;
+        let translatedMessage = t(err.message, { field: fieldName });
+        errorMap[err.field] = translatedMessage;
       });
       setErrors(errorMap);
       setLoading(false);
@@ -114,7 +112,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
     } catch (error) {
       addToast({
         type: 'error',
-        message: error instanceof Error ? error.message : t('common.error'),
+        message: getErrorMessage(error, t),
       });
     } finally {
       setLoading(false);
@@ -130,12 +128,12 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
       title={title}
       maxWidth="lg"
       footer={
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 rounded-lg border border-border dark:border-border-dark text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors disabled:opacity-50"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg border border-border dark:border-border-dark text-text-primary dark:text-text-primary-dark hover:bg-bg-base dark:hover:bg-bg-base-dark transition-colors disabled:opacity-50"
           >
             {t('common.cancel')}
           </button>
@@ -143,7 +141,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
             type="submit"
             form="project-form"
             disabled={loading}
-            className="px-4 py-2 rounded-lg bg-primary dark:bg-primary-dark text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-primary dark:bg-primary-dark text-white hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {loading ? t('common.loading') : isEditing ? t('common.save') : t('common.create')}
           </button>
@@ -151,7 +149,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
       }
     >
       <form id="project-form" onSubmit={handleSubmit} className="space-y-4">
-        {/* Name */}
         <div>
           <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
             {t('projects.columns.name')} <span className="text-error dark:text-error-dark">*</span>
@@ -160,6 +157,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
             type="text"
             value={formData.name}
             onChange={(e) => handleChange('name', e.target.value)}
+            onFocus={(e) => e.target.select()}
             className={`w-full px-3 py-2 rounded-lg border ${
               errors.name
                 ? 'border-error dark:border-error-dark'
@@ -172,7 +170,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           )}
         </div>
 
-        {/* Owner */}
         <div>
           <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
             {t('projects.columns.owner')} <span className="text-error dark:text-error-dark">*</span>
@@ -198,8 +195,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           )}
         </div>
 
-        {/* Status and Priority */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
               {t('projects.columns.status')}
@@ -231,8 +227,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           </div>
         </div>
 
-        {/* Dates */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
               {t('projects.startDate')}
@@ -241,6 +236,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
               type="date"
               value={formData.startDate}
               onChange={(e) => handleChange('startDate', e.target.value)}
+              onFocus={(e) => e.target.select()}
               className="w-full px-3 py-2 rounded-lg border border-border dark:border-border-dark bg-bg-base dark:bg-bg-base-dark text-text-primary dark:text-text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark"
             />
           </div>
@@ -253,6 +249,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
               type="date"
               value={formData.estimatedDate}
               onChange={(e) => handleChange('estimatedDate', e.target.value)}
+              onFocus={(e) => e.target.select()}
               className={`w-full px-3 py-2 rounded-lg border ${
                 errors.estimatedDate
                   ? 'border-error dark:border-error-dark'
@@ -266,7 +263,6 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           </div>
         </div>
 
-        {/* Progress */}
         <div>
           <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
             {t('projects.columns.progress')} (%)
@@ -277,6 +273,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
             max="100"
             value={formData.progress}
             onChange={(e) => handleChange('progress', parseInt(e.target.value) || 0)}
+            onFocus={(e) => e.target.select()}
             className={`w-full px-3 py-2 rounded-lg border ${
               errors.progress
                 ? 'border-error dark:border-error-dark'
@@ -288,8 +285,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
           )}
         </div>
 
-        {/* Tasks */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary dark:text-text-primary-dark mb-1">
               {t('projects.tasksTotal')}
@@ -299,6 +295,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
               min="0"
               value={formData.tasksTotal}
               onChange={(e) => handleChange('tasksTotal', parseInt(e.target.value) || 0)}
+              onFocus={(e) => e.target.select()}
               className={`w-full px-3 py-2 rounded-lg border ${
                 errors.tasksTotal
                   ? 'border-error dark:border-error-dark'
@@ -319,6 +316,7 @@ export function ProjectFormModal({ isOpen, onClose, project }: ProjectFormModalP
               min="0"
               value={formData.tasksCompleted}
               onChange={(e) => handleChange('tasksCompleted', parseInt(e.target.value) || 0)}
+              onFocus={(e) => e.target.select()}
               className={`w-full px-3 py-2 rounded-lg border ${
                 errors.tasksCompleted
                   ? 'border-error dark:border-error-dark'

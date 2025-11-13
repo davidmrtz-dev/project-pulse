@@ -5,6 +5,7 @@ import { useDarkMode } from '../hooks/useDarkMode';
 import { useI18n } from '../i18n/I18nProvider';
 import { useStore } from '../store/useStore';
 import { useNotifications } from '../lib/notifications';
+import { getErrorMessage } from '../lib/errors';
 import { SkeletonCard, LoadingSpinner } from './Loading';
 import { ErrorCard } from './Error';
 import { TeamMemberFormModal } from './modals/TeamMemberFormModal';
@@ -77,7 +78,7 @@ export function TeamPerformance({ teamMembers, loading, error, onRetry }: TeamPe
     } catch (error) {
       addToast({
         type: 'error',
-        message: error instanceof Error ? error.message : t('common.error'),
+        message: getErrorMessage(error, t),
       });
     } finally {
       setDeleting(false);

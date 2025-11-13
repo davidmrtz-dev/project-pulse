@@ -15,7 +15,7 @@ export function validateRequired(value: any, fieldName: string): ValidationError
   if (value === null || value === undefined || value === '') {
     return {
       field: fieldName,
-      message: `${fieldName} is required`,
+      message: `validation.required`,
     };
   }
   return null;
@@ -33,7 +33,7 @@ export function validateRange(
   if (value < min || value > max) {
     return {
       field: fieldName,
-      message: `${fieldName} must be between ${min} and ${max}`,
+      message: `validation.range`,
     };
   }
   return null;
@@ -47,7 +47,7 @@ export function validateDate(value: string, fieldName: string): ValidationError 
   if (isNaN(date.getTime())) {
     return {
       field: fieldName,
-      message: `${fieldName} must be a valid date`,
+      message: `validation.date`,
     };
   }
   return null;
@@ -102,14 +102,14 @@ export function validateProject(project: {
   if (project.tasksTotal !== undefined && project.tasksTotal < 0) {
     errors.push({
       field: 'tasksTotal',
-      message: 'Total tasks must be a positive number',
+      message: 'validation.tasksTotalPositive',
     });
   }
 
   if (project.tasksCompleted !== undefined && project.tasksCompleted < 0) {
     errors.push({
       field: 'tasksCompleted',
-      message: 'Completed tasks must be a positive number',
+      message: 'validation.tasksCompletedPositive',
     });
   }
 
@@ -120,7 +120,7 @@ export function validateProject(project: {
   ) {
     errors.push({
       field: 'tasksCompleted',
-      message: 'Completed tasks cannot exceed total tasks',
+      message: 'validation.tasksExceedTotal',
     });
   }
 

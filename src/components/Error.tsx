@@ -3,14 +3,20 @@ import { useI18n } from '../i18n/I18nProvider';
 import { useDarkMode } from '../hooks/useDarkMode';
 
 type ErrorProps = {
-  message?: string;
+  message?: string | null;
   onRetry?: () => void;
   className?: string;
 };
 
 export function ErrorMessage({ message, onRetry, className = '' }: ErrorProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode();
+
+  const translatedMessage = message 
+    ? (message.startsWith('errors.') || message.startsWith('validation.') 
+        ? t(message) 
+        : message)
+    : t('common.error');
 
   return (
     <div
@@ -20,7 +26,7 @@ export function ErrorMessage({ message, onRetry, className = '' }: ErrorProps) {
         <AlertCircle className="w-5 h-5 text-error dark:text-error-dark flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-error dark:text-error-dark">
-            {message || t('common.error')}
+            {translatedMessage}
           </p>
           {onRetry && (
             <button

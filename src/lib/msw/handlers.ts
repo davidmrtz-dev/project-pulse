@@ -1,48 +1,84 @@
 import { http, HttpResponse } from 'msw';
 
-// Monthly series data (current period - last 12 months)
-const demoSeries = Array.from({ length: 12 }, (_, i) => ({
-  month: i + 1,
-  velocity: Math.round(60 + Math.random() * 25),
-  completion: Math.round(50 + Math.random() * 40),
-}));
+// Monthly series data (current period - last 24 months for more historical data)
+const demoSeries = Array.from({ length: 24 }, (_, i) => {
+  // Create a trend: starting lower, peaking in the middle, then stabilizing
+  const trendFactor = i < 12 ? (i / 12) * 0.3 : 0.3 - ((i - 12) / 12) * 0.1;
+  const baseVelocity = 55 + trendFactor * 20;
+  const baseCompletion = 45 + trendFactor * 25;
+  return {
+    month: i + 1,
+    velocity: Math.round(baseVelocity + (Math.random() - 0.5) * 15),
+    completion: Math.round(baseCompletion + (Math.random() - 0.5) * 20),
+  };
+});
 
-// Previous period series data (12 months before)
-const previousSeries = Array.from({ length: 12 }, (_, i) => ({
-  month: i + 1,
-  velocity: Math.round(55 + Math.random() * 20),
-  completion: Math.round(45 + Math.random() * 35),
-}));
+// Previous period series data (24 months before current period)
+const previousSeries = Array.from({ length: 24 }, (_, i) => {
+  // Lower baseline for previous period showing improvement over time
+  const trendFactor = i < 12 ? (i / 12) * 0.2 : 0.2 - ((i - 12) / 12) * 0.05;
+  const baseVelocity = 50 + trendFactor * 15;
+  const baseCompletion = 40 + trendFactor * 20;
+  return {
+    month: i + 1,
+    velocity: Math.round(baseVelocity + (Math.random() - 0.5) * 12),
+    completion: Math.round(baseCompletion + (Math.random() - 0.5) * 18),
+  };
+});
 
-// Weekly trends (last 12 weeks - current period)
-const weeklyTrends = Array.from({ length: 12 }, (_, i) => ({
-  week: i + 1,
-  completed: Math.round(20 + Math.random() * 15),
-  inProgress: Math.round(15 + Math.random() * 10),
-  blocked: Math.round(2 + Math.random() * 5),
-}));
+// Weekly trends (last 24 weeks - current period for more historical data)
+const weeklyTrends = Array.from({ length: 24 }, (_, i) => {
+  // Show improvement trend over time
+  const improvementFactor = (i / 24) * 0.3;
+  const baseCompleted = 18 + improvementFactor * 10;
+  const baseInProgress = 12 + improvementFactor * 5;
+  return {
+    week: i + 1,
+    completed: Math.round(baseCompleted + (Math.random() - 0.5) * 8),
+    inProgress: Math.round(baseInProgress + (Math.random() - 0.5) * 6),
+    blocked: Math.round(2 + Math.random() * 4 + (Math.random() < 0.1 ? 3 : 0)), // Occasional spikes
+  };
+});
 
-// Previous period weekly trends
-const previousWeeklyTrends = Array.from({ length: 12 }, (_, i) => ({
-  week: i + 1,
-  completed: Math.round(18 + Math.random() * 12),
-  inProgress: Math.round(13 + Math.random() * 8),
-  blocked: Math.round(2 + Math.random() * 4),
-}));
+// Previous period weekly trends (24 weeks before)
+const previousWeeklyTrends = Array.from({ length: 24 }, (_, i) => {
+  // Lower baseline showing historical improvement
+  const improvementFactor = (i / 24) * 0.2;
+  const baseCompleted = 15 + improvementFactor * 8;
+  const baseInProgress = 10 + improvementFactor * 4;
+  return {
+    week: i + 1,
+    completed: Math.round(baseCompleted + (Math.random() - 0.5) * 6),
+    inProgress: Math.round(baseInProgress + (Math.random() - 0.5) * 5),
+    blocked: Math.round(2 + Math.random() * 3 + (Math.random() < 0.15 ? 4 : 0)), // More frequent spikes
+  };
+});
 
-// Backlog growth over time (current period)
-const backlogGrowth = Array.from({ length: 12 }, (_, i) => ({
-  month: i + 1,
-  backlog: Math.round(80 + Math.random() * 40 - i * 2),
-  completed: Math.round(60 + Math.random() * 30),
-}));
+// Backlog growth over time (current period - 24 months)
+const backlogGrowth = Array.from({ length: 24 }, (_, i) => {
+  // Show backlog management improvement over time
+  const reductionFactor = (i / 24) * 0.4;
+  const baseBacklog = 95 - reductionFactor * 25;
+  const baseCompleted = 50 + reductionFactor * 20;
+  return {
+    month: i + 1,
+    backlog: Math.round(baseBacklog + (Math.random() - 0.5) * 15),
+    completed: Math.round(baseCompleted + (Math.random() - 0.5) * 12),
+  };
+});
 
-// Previous period backlog growth
-const previousBacklogGrowth = Array.from({ length: 12 }, (_, i) => ({
-  month: i + 1,
-  backlog: Math.round(85 + Math.random() * 35 - i * 1.5),
-  completed: Math.round(55 + Math.random() * 25),
-}));
+// Previous period backlog growth (24 months before)
+const previousBacklogGrowth = Array.from({ length: 24 }, (_, i) => {
+  // Higher baseline showing less efficient backlog management
+  const reductionFactor = (i / 24) * 0.3;
+  const baseBacklog = 100 - reductionFactor * 20;
+  const baseCompleted = 45 + reductionFactor * 15;
+  return {
+    month: i + 1,
+    backlog: Math.round(baseBacklog + (Math.random() - 0.5) * 12),
+    completed: Math.round(baseCompleted + (Math.random() - 0.5) * 10),
+  };
+});
 
 // Task status distribution
 const taskStatusDistribution = [
@@ -69,14 +105,25 @@ const teamWorkload = [
   { name: 'James Brown', activeTasks: 10, completedThisWeek: 7 },
 ];
 
-// Mutable projects array for CRUD operations
+// Mutable projects array for CRUD operations - expanded with more historical projects
 let projects = [
+  // Current active projects
   { id: '1', name: 'E-commerce Platform', owner: 'Sarah Chen', progress: 78, status: 'on-track', estimatedDate: '2024-03-15', priority: 'high', tasksCompleted: 156, tasksTotal: 200, startDate: '2024-01-10' },
   { id: '2', name: 'Mobile App Redesign', owner: 'Marcus Johnson', progress: 45, status: 'delayed', estimatedDate: '2024-04-20', priority: 'medium', tasksCompleted: 90, tasksTotal: 200, startDate: '2024-02-01' },
   { id: '3', name: 'API Integration', owner: 'Emma Wilson', progress: 92, status: 'on-track', estimatedDate: '2024-02-28', priority: 'high', tasksCompleted: 184, tasksTotal: 200, startDate: '2023-12-15' },
   { id: '4', name: 'Dashboard Analytics', owner: 'David Martinez', progress: 34, status: 'blocked', estimatedDate: '2024-05-10', priority: 'low', tasksCompleted: 68, tasksTotal: 200, startDate: '2024-02-20' },
   { id: '5', name: 'Security Audit', owner: 'Lisa Anderson', progress: 67, status: 'on-track', estimatedDate: '2024-03-30', priority: 'high', tasksCompleted: 134, tasksTotal: 200, startDate: '2024-01-05' },
   { id: '6', name: 'Content Migration', owner: 'James Brown', progress: 23, status: 'delayed', estimatedDate: '2024-06-15', priority: 'medium', tasksCompleted: 46, tasksTotal: 200, startDate: '2024-03-01' },
+  // Historical projects from previous periods
+  { id: '7', name: 'Legacy System Modernization', owner: 'Sarah Chen', progress: 100, status: 'on-track', estimatedDate: '2023-11-30', priority: 'high', tasksCompleted: 250, tasksTotal: 250, startDate: '2023-06-01' },
+  { id: '8', name: 'Cloud Infrastructure Migration', owner: 'Emma Wilson', progress: 100, status: 'on-track', estimatedDate: '2023-10-15', priority: 'high', tasksCompleted: 180, tasksTotal: 180, startDate: '2023-05-10' },
+  { id: '9', name: 'Payment Gateway Integration', owner: 'Marcus Johnson', progress: 100, status: 'on-track', estimatedDate: '2023-09-20', priority: 'medium', tasksCompleted: 120, tasksTotal: 120, startDate: '2023-04-15' },
+  { id: '10', name: 'User Authentication System', owner: 'David Martinez', progress: 100, status: 'on-track', estimatedDate: '2023-08-10', priority: 'high', tasksCompleted: 95, tasksTotal: 95, startDate: '2023-03-01' },
+  { id: '11', name: 'Database Optimization', owner: 'Lisa Anderson', progress: 100, status: 'on-track', estimatedDate: '2023-12-05', priority: 'medium', tasksCompleted: 140, tasksTotal: 140, startDate: '2023-07-20' },
+  { id: '12', name: 'Frontend Component Library', owner: 'James Brown', progress: 100, status: 'on-track', estimatedDate: '2023-11-15', priority: 'low', tasksCompleted: 200, tasksTotal: 200, startDate: '2023-05-25' },
+  { id: '13', name: 'CI/CD Pipeline Setup', owner: 'Sarah Chen', progress: 100, status: 'on-track', estimatedDate: '2023-07-30', priority: 'high', tasksCompleted: 75, tasksTotal: 75, startDate: '2023-02-10' },
+  { id: '14', name: 'Performance Monitoring', owner: 'Emma Wilson', progress: 100, status: 'on-track', estimatedDate: '2023-09-05', priority: 'medium', tasksCompleted: 110, tasksTotal: 110, startDate: '2023-04-01' },
+  { id: '15', name: 'Documentation Portal', owner: 'Marcus Johnson', progress: 100, status: 'on-track', estimatedDate: '2023-10-25', priority: 'low', tasksCompleted: 85, tasksTotal: 85, startDate: '2023-05-15' },
 ];
 
 // Helper to generate next ID
@@ -101,10 +148,22 @@ function getNextTeamMemberId(): string {
   return String(maxId + 1);
 }
 
+// Expanded alerts with more historical data
 const alerts = [
-  { id: '1', type: 'warning', message: '2 proyectos en riesgo de retraso', timestamp: new Date().toISOString() },
-  { id: '2', type: 'error', message: 'Baja velocidad sostenida en el último sprint', timestamp: new Date(Date.now() - 3600000).toISOString() },
-  { id: '3', type: 'info', message: 'Nuevo proyecto agregado: Content Migration', timestamp: new Date(Date.now() - 7200000).toISOString() },
+  // Recent alerts
+  { id: '1', type: 'warning', message: 'alerts.messages.projectsAtRisk', messageParams: { count: 2 }, timestamp: new Date().toISOString() },
+  { id: '2', type: 'error', message: 'alerts.messages.lowVelocity', timestamp: new Date(Date.now() - 3600000).toISOString() },
+  { id: '3', type: 'info', message: 'alerts.messages.newProject', messageParams: { projectName: 'Content Migration' }, timestamp: new Date(Date.now() - 7200000).toISOString() },
+  // Historical alerts from past days/weeks
+  { id: '4', type: 'info', message: 'alerts.messages.newProject', messageParams: { projectName: 'Dashboard Analytics' }, timestamp: new Date(Date.now() - 86400000 * 2).toISOString() },
+  { id: '5', type: 'warning', message: 'alerts.messages.projectsAtRisk', messageParams: { count: 1 }, timestamp: new Date(Date.now() - 86400000 * 3).toISOString() },
+  { id: '6', type: 'info', message: 'alerts.messages.newProject', messageParams: { projectName: 'Security Audit' }, timestamp: new Date(Date.now() - 86400000 * 5).toISOString() },
+  { id: '7', type: 'error', message: 'alerts.messages.lowVelocity', timestamp: new Date(Date.now() - 86400000 * 7).toISOString() },
+  { id: '8', type: 'warning', message: 'alerts.messages.projectsAtRisk', messageParams: { count: 3 }, timestamp: new Date(Date.now() - 86400000 * 10).toISOString() },
+  { id: '9', type: 'info', message: 'alerts.messages.newProject', messageParams: { projectName: 'Mobile App Redesign' }, timestamp: new Date(Date.now() - 86400000 * 12).toISOString() },
+  { id: '10', type: 'warning', message: 'alerts.messages.projectsAtRisk', messageParams: { count: 1 }, timestamp: new Date(Date.now() - 86400000 * 15).toISOString() },
+  { id: '11', type: 'info', message: 'alerts.messages.newProject', messageParams: { projectName: 'API Integration' }, timestamp: new Date(Date.now() - 86400000 * 20).toISOString() },
+  { id: '12', type: 'error', message: 'alerts.messages.lowVelocity', timestamp: new Date(Date.now() - 86400000 * 25).toISOString() },
 ];
 
 export const handlers = [

@@ -36,7 +36,6 @@ export function WeeklyTrendsChart({ data, previousData, loading, error, onRetry,
     blocked: isDark ? '#FFAB91' : '#FFAB91',
   };
 
-  // Combine data for comparison
   const combinedData = previousData && previousData.length > 0
     ? data.map((item, index) => ({
         week: item.week,

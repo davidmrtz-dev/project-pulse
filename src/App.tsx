@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages, Download } from 'lucide-react';
+import { Moon, Sun, LayoutDashboard, FolderKanban, Users, Bell, Languages, Download, Info } from 'lucide-react';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useI18n } from './i18n/I18nProvider';
 import { useStore } from './store/useStore';
@@ -7,6 +7,7 @@ import { Overview } from './components/Overview';
 import { ProjectsTable } from './components/ProjectsTable';
 import { TeamPerformance } from './components/TeamPerformance';
 import { Alerts } from './components/Alerts';
+import { About } from './components/About';
 import { Filters } from './components/Filters';
 import { ToastContainer } from './components/Toast';
 import {
@@ -60,9 +61,8 @@ export default function App() {
 
   useEffect(() => {
     fetchAll();
-  }, []); // fetchAll is stable from Zustand, no need to include in deps
+  }, []);
 
-  // Memoize fetch previous functions to avoid recreating them on every render
   const handleFetchPrevious = useMemo(
     () => ({
       kpi: () => fetchKpi('previous'),
@@ -73,21 +73,17 @@ export default function App() {
     [fetchKpi, fetchSeries, fetchWeeklyTrends, fetchBacklogGrowth]
   );
 
-  // Filter projects based on filter state
   const filteredProjects = useMemo(() => {
     let filtered = [...allProjects];
 
-    // Filter by status
     if (filters.status !== 'all') {
       filtered = filtered.filter((p) => p.status === filters.status);
     }
 
-    // Filter by priority
     if (filters.priority !== 'all') {
       filtered = filtered.filter((p) => p.priority === filters.priority);
     }
 
-    // Filter by team member (owner)
     if (filters.team !== 'all') {
       const teamMap: Record<string, string> = {
         sarah: 'Sarah Chen',
@@ -103,7 +99,6 @@ export default function App() {
       }
     }
 
-    // Filter by date range
     if (filters.dateRange !== 'all') {
       const now = new Date();
       let cutoffDate = new Date();
@@ -132,7 +127,6 @@ export default function App() {
     return filtered;
   }, [allProjects, filters]);
 
-  // Filter team members
   const filteredTeamMembers = useMemo(() => {
     if (filters.team === 'all') return allTeamMembers;
 
@@ -184,6 +178,7 @@ export default function App() {
     { id: 'projects' as const, label: t('tabs.projects'), icon: FolderKanban },
     { id: 'team' as const, label: t('tabs.team'), icon: Users },
     { id: 'alerts' as const, label: t('tabs.alerts'), icon: Bell },
+    { id: 'about' as const, label: t('tabs.about'), icon: Info },
   ];
 
   return (
@@ -195,7 +190,6 @@ export default function App() {
               Project Pulse
             </h1>
             <div className="flex items-center gap-2">
-              {/* Only show filters in tabs where they work: projects and team */}
               {(activeTab === 'projects' || activeTab === 'team') && (
                 <Filters filters={filters} onFilterChange={handleFilterChange} />
               )}
@@ -203,7 +197,6 @@ export default function App() {
                 {t('common.demo')}
               </div>
               
-              {/* Export Menu */}
               <div className="relative">
                 <button
                   onClick={() => setShowExportMenu(!showExportMenu)}
@@ -256,7 +249,6 @@ export default function App() {
                 )}
               </div>
               
-              {/* Language Selector */}
               <div className="relative">
                 <button
                   onClick={() => setShowLangMenu(!showLangMenu)}
@@ -320,7 +312,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Tabs Navigation */}
           <nav className="flex gap-1 -mb-3">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -414,6 +405,7 @@ export default function App() {
             onRetry={fetchAlerts}
           />
         )}
+        {activeTab === 'about' && <About />}
       </main>
       <ToastContainer />
     </div>

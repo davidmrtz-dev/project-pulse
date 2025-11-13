@@ -20,13 +20,43 @@
     "exportProjects": "Exportar Proyectos",
     "exportTeam": "Exportar Equipo",
     "exportAlerts": "Exportar Alertas",
-    "exportAll": "Exportar Todos los Datos"
+    "exportAll": "Exportar Todos los Datos",
+    "unknownError": "Error desconocido"
+  },
+  "errors": {
+    "fetchKpi": "Error al cargar los KPIs",
+    "fetchSeries": "Error al cargar las series",
+    "fetchProjects": "Error al cargar los proyectos",
+    "fetchTeam": "Error al cargar el equipo",
+    "fetchAlerts": "Error al cargar las alertas",
+    "fetchWeeklyTrends": "Error al cargar las tendencias semanales",
+    "fetchBacklogGrowth": "Error al cargar el crecimiento del backlog",
+    "fetchTaskStatus": "Error al cargar el estado de las tareas",
+    "fetchProjectStatus": "Error al cargar el estado de los proyectos",
+    "fetchTeamWorkload": "Error al cargar la carga de trabajo del equipo",
+    "createProject": "Error al crear el proyecto",
+    "updateProject": "Error al actualizar el proyecto",
+    "deleteProject": "Error al eliminar el proyecto",
+    "createTeamMember": "Error al crear el miembro del equipo",
+    "updateTeamMember": "Error al actualizar el miembro del equipo",
+    "deleteTeamMember": "Error al eliminar el miembro del equipo"
+  },
+  "validation": {
+    "required": "{field} es requerido",
+    "range": "{field} debe estar entre {min} y {max}",
+    "date": "{field} debe ser una fecha válida",
+    "email": "{field} debe ser un email válido",
+    "positive": "{field} debe ser un número positivo",
+    "tasksTotalPositive": "El total de tareas debe ser un número positivo",
+    "tasksCompletedPositive": "Las tareas completadas deben ser un número positivo",
+    "tasksExceedTotal": "Las tareas completadas no pueden exceder el total de tareas"
   },
   "tabs": {
     "overview": "Resumen",
     "projects": "Proyectos",
     "team": "Equipo",
-    "alerts": "Alertas"
+    "alerts": "Alertas",
+    "about": "Acerca de"
   },
   "overview": {
     "title": "Resumen",
@@ -119,9 +149,9 @@
     "title": "Alertas y Notificaciones",
     "noAlerts": "No hay alertas en este momento",
     "messages": {
-      "projectsAtRisk": "proyectos en riesgo de retraso",
+      "projectsAtRisk": "{count} proyectos en riesgo de retraso",
       "lowVelocity": "Baja velocidad sostenida en el último sprint",
-      "newProject": "Nuevo proyecto agregado:"
+      "newProject": "Nuevo proyecto agregado: {projectName}"
     }
   },
   "filters": {
@@ -179,6 +209,118 @@
     },
     "weekly": {
       "title": "Detalles de Tendencias Semanales - Semana {week}"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Project Pulse",
+      "subtitle": "Dashboard de Analítica de Proyectos de Nivel Empresarial",
+      "description": "Una solución de dashboard sofisticada y lista para producción, diseñada para equipos de desarrollo modernos. Construida con tecnologías de vanguardia y mejores prácticas, Project Pulse ofrece insights en tiempo real sobre el rendimiento de proyectos, productividad del equipo y métricas operativas."
+    },
+    "features": {
+      "title": "Características Principales",
+      "dashboard": {
+        "title": "Dashboard en Tiempo Real",
+        "description": "Monitoreo integral de KPIs con comparación de períodos, gráficos interactivos con capacidades de drill-down, y visualización de datos en tiempo real a través de 6 tipos diferentes de gráficos."
+      },
+      "projects": {
+        "title": "Gestión de Proyectos",
+        "description": "Operaciones CRUD completas con filtrado avanzado, búsqueda y ordenamiento. Rastrea el estado del proyecto, prioridad, progreso y asignaciones de equipo con una interfaz de tabla intuitiva."
+      },
+      "team": {
+        "title": "Rendimiento del Equipo",
+        "description": "Monitorea métricas individuales y del equipo incluyendo velocidad, tasas de entrega a tiempo, productividad y asignaciones de proyectos activos con visualizaciones comparativas."
+      },
+      "alerts": {
+        "title": "Notificaciones Inteligentes",
+        "description": "Sistema de alertas en tiempo real con notificaciones categorizadas (advertencia, error, info), seguimiento de timestamps y detección inteligente de riesgos para gestión proactiva de proyectos."
+      },
+      "i18n": {
+        "title": "Internacionalización",
+        "description": "Soporte completo multiidioma (Inglés/Español) con cambio dinámico de idioma, cobertura de traducción integral y formato consciente de la localización."
+      },
+      "export": {
+        "title": "Exportación de Datos",
+        "description": "Exporta proyectos, datos del equipo, alertas y KPIs a formato CSV con soporte de datos filtrados para integración perfecta con herramientas externas y sistemas de reportes."
+      }
+    },
+    "tech": {
+      "title": "Stack Tecnológico",
+      "core": "Framework Core",
+      "language": "Lenguaje",
+      "build": "Herramienta de Build",
+      "styles": "Estilos",
+      "state": "Gestión de Estado",
+      "tables": "Tablas de Datos",
+      "charts": "Visualización de Datos",
+      "forms": "Gestión de Formularios",
+      "validation": "Validación",
+      "mock": "Simulación de API",
+      "icons": "Biblioteca de Iconos",
+      "testing": "Framework de Testing"
+    },
+    "goals": {
+      "title": "Objetivos y Metas del Proyecto",
+      "performance": "Entregar rendimiento excepcional con renderizado optimizado, gestión eficiente del estado y tamaño de bundle mínimo.",
+      "scalability": "Construir una arquitectura escalable que pueda manejar volúmenes de datos crecientes y requisitos de características sin comprometer el rendimiento.",
+      "maintainability": "Asegurar la mantenibilidad del código a través de arquitectura limpia, documentación integral y adherencia a las mejores prácticas de la industria.",
+      "userExperience": "Proporcionar una experiencia de usuario intuitiva, responsive y accesible con animaciones suaves y patrones de diseño consistentes.",
+      "codeQuality": "Mantener altos estándares de calidad de código con TypeScript, ESLint, Prettier y cobertura de testing integral.",
+      "accessibility": "Implementar mejores prácticas de accesibilidad para asegurar que la aplicación sea utilizable por todos, incluyendo usuarios con discapacidades."
+    },
+    "architecture": {
+      "title": "Arquitectura y Diseño",
+      "component": {
+        "title": "Arquitectura Basada en Componentes",
+        "description": "Construido con el modelo de componentes de React, presentando componentes reutilizables y composables con clara separación de responsabilidades. Cada componente es autocontenido con su propia lógica, estilos y gestión de estado donde sea apropiado."
+      },
+      "state": {
+        "title": "Gestión de Estado Centralizada",
+        "description": "Zustand proporciona gestión de estado ligera y performante con mínimo boilerplate. El estado está organizado por dominio (proyectos, equipo, KPIs) con claros límites de acción y actualizaciones predecibles."
+      },
+      "styling": {
+        "title": "Estilos Utility-First",
+        "description": "TailwindCSS permite desarrollo rápido de UI con un sistema de diseño consistente. El soporte de modo oscuro está integrado con variables CSS para cambio dinámico de tema sin recargas de página."
+      },
+      "i18n": {
+        "title": "Sistema de Internacionalización",
+        "description": "Implementación i18n personalizada con claves de traducción anidadas, interpolación de parámetros y cambio dinámico de idioma. Las traducciones son type-safe y organizadas por dominio de características."
+      },
+      "testing": {
+        "title": "Estrategia de Testing",
+        "description": "Vitest proporciona testing unitario rápido con React Testing Library para testing de componentes. MSW permite simulación de API para testing de integración sin dependencias de backend."
+      }
+    },
+    "practices": {
+      "title": "Mejores Prácticas y Estándares",
+      "code": {
+        "title": "Calidad de Código",
+        "typeScript": "Cobertura completa de TypeScript con modo estricto habilitado",
+        "eslint": "Configuración ESLint con reglas de React hooks y TypeScript",
+        "prettier": "Prettier para formato consistente de código",
+        "strict": "Verificaciones estrictas de null y seguridad de tipos en todo el código"
+      },
+      "performance": {
+        "title": "Optimización de Rendimiento",
+        "memoization": "React.memo y useMemo para computaciones costosas",
+        "lazy": "Code splitting y lazy loading para tamaño óptimo de bundle",
+        "optimization": "Re-renders optimizados con arrays de dependencias apropiados",
+        "bundle": "Tree-shaking y eliminación de código muerto"
+      },
+      "ux": {
+        "title": "Experiencia de Usuario",
+        "responsive": "Diseño responsive mobile-first para todos los tamaños de pantalla",
+        "darkMode": "Modo oscuro perfecto con detección de preferencias del sistema",
+        "loading": "Estados de carga y skeleton screens para mejor rendimiento percibido",
+        "feedback": "Notificaciones toast y manejo de errores para feedback del usuario"
+      },
+      "maintainability": {
+        "title": "Mantenibilidad",
+        "modular": "Estructura de archivos modular con clara separación de responsabilidades",
+        "reusable": "Componentes reutilizables y custom hooks para compartir código",
+        "documented": "Comentarios de código integrales y definiciones de tipos",
+        "tested": "Tests unitarios para lógica de negocio crítica y utilidades"
+      }
     }
   }
 }

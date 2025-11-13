@@ -20,13 +20,43 @@
     "exportProjects": "Export Projects",
     "exportTeam": "Export Team",
     "exportAlerts": "Export Alerts",
-    "exportAll": "Export All Data"
+    "exportAll": "Export All Data",
+    "unknownError": "Unknown error"
+  },
+  "errors": {
+    "fetchKpi": "Failed to fetch KPIs",
+    "fetchSeries": "Failed to fetch series",
+    "fetchProjects": "Failed to fetch projects",
+    "fetchTeam": "Failed to fetch team",
+    "fetchAlerts": "Failed to fetch alerts",
+    "fetchWeeklyTrends": "Failed to fetch weekly trends",
+    "fetchBacklogGrowth": "Failed to fetch backlog growth",
+    "fetchTaskStatus": "Failed to fetch task status",
+    "fetchProjectStatus": "Failed to fetch project status",
+    "fetchTeamWorkload": "Failed to fetch team workload",
+    "createProject": "Failed to create project",
+    "updateProject": "Failed to update project",
+    "deleteProject": "Failed to delete project",
+    "createTeamMember": "Failed to create team member",
+    "updateTeamMember": "Failed to update team member",
+    "deleteTeamMember": "Failed to delete team member"
+  },
+  "validation": {
+    "required": "{field} is required",
+    "range": "{field} must be between {min} and {max}",
+    "date": "{field} must be a valid date",
+    "email": "{field} must be a valid email",
+    "positive": "{field} must be a positive number",
+    "tasksTotalPositive": "Total tasks must be a positive number",
+    "tasksCompletedPositive": "Completed tasks must be a positive number",
+    "tasksExceedTotal": "Completed tasks cannot exceed total tasks"
   },
   "tabs": {
     "overview": "Overview",
     "projects": "Projects",
     "team": "Team",
-    "alerts": "Alerts"
+    "alerts": "Alerts",
+    "about": "About"
   },
   "overview": {
     "title": "Overview",
@@ -119,9 +149,9 @@
     "title": "Alerts & Notifications",
     "noAlerts": "No alerts at this time",
     "messages": {
-      "projectsAtRisk": "projects at risk of delay",
+      "projectsAtRisk": "{count} projects at risk of delay",
       "lowVelocity": "Sustained low velocity in the last sprint",
-      "newProject": "New project added:"
+      "newProject": "New project added: {projectName}"
     }
   },
   "filters": {
@@ -179,6 +209,118 @@
     },
     "weekly": {
       "title": "Weekly Trends Details - Week {week}"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Project Pulse",
+      "subtitle": "Enterprise-Grade Project Analytics Dashboard",
+      "description": "A sophisticated, production-ready dashboard solution designed for modern development teams. Built with cutting-edge technologies and best practices, Project Pulse delivers real-time insights into project performance, team productivity, and operational metrics."
+    },
+    "features": {
+      "title": "Key Features",
+      "dashboard": {
+        "title": "Real-Time Dashboard",
+        "description": "Comprehensive KPI monitoring with period comparison, interactive charts with drill-down capabilities, and real-time data visualization across 6 different chart types."
+      },
+      "projects": {
+        "title": "Project Management",
+        "description": "Full CRUD operations with advanced filtering, search, and sorting. Track project status, priority, progress, and team assignments with an intuitive table interface."
+      },
+      "team": {
+        "title": "Team Performance",
+        "description": "Monitor individual and team metrics including velocity, on-time delivery rates, productivity, and active project assignments with comparative visualizations."
+      },
+      "alerts": {
+        "title": "Smart Notifications",
+        "description": "Real-time alert system with categorized notifications (warning, error, info), timestamp tracking, and intelligent risk detection for proactive project management."
+      },
+      "i18n": {
+        "title": "Internationalization",
+        "description": "Full multi-language support (English/Spanish) with dynamic language switching, comprehensive translation coverage, and locale-aware formatting."
+      },
+      "export": {
+        "title": "Data Export",
+        "description": "Export projects, team data, alerts, and KPIs to CSV format with filtered data support for seamless integration with external tools and reporting systems."
+      }
+    },
+    "tech": {
+      "title": "Technology Stack",
+      "core": "Core Framework",
+      "language": "Language",
+      "build": "Build Tool",
+      "styles": "Styling",
+      "state": "State Management",
+      "tables": "Data Tables",
+      "charts": "Data Visualization",
+      "forms": "Form Management",
+      "validation": "Validation",
+      "mock": "API Mocking",
+      "icons": "Icon Library",
+      "testing": "Testing Framework"
+    },
+    "goals": {
+      "title": "Project Goals & Objectives",
+      "performance": "Deliver exceptional performance with optimized rendering, efficient state management, and minimal bundle size.",
+      "scalability": "Build a scalable architecture that can handle growing data volumes and feature requirements without compromising performance.",
+      "maintainability": "Ensure code maintainability through clean architecture, comprehensive documentation, and adherence to industry best practices.",
+      "userExperience": "Provide an intuitive, responsive, and accessible user experience with smooth animations and consistent design patterns.",
+      "codeQuality": "Maintain high code quality standards with TypeScript, ESLint, Prettier, and comprehensive testing coverage.",
+      "accessibility": "Implement accessibility best practices to ensure the application is usable by everyone, including users with disabilities."
+    },
+    "architecture": {
+      "title": "Architecture & Design",
+      "component": {
+        "title": "Component-Based Architecture",
+        "description": "Built with React's component model, featuring reusable, composable components with clear separation of concerns. Each component is self-contained with its own logic, styling, and state management where appropriate."
+      },
+      "state": {
+        "title": "Centralized State Management",
+        "description": "Zustand provides lightweight, performant state management with minimal boilerplate. State is organized by domain (projects, team, KPIs) with clear action boundaries and predictable updates."
+      },
+      "styling": {
+        "title": "Utility-First Styling",
+        "description": "TailwindCSS enables rapid UI development with a consistent design system. Dark mode support is built-in with CSS variables for dynamic theme switching without page reloads."
+      },
+      "i18n": {
+        "title": "Internationalization System",
+        "description": "Custom i18n implementation with nested translation keys, parameter interpolation, and dynamic language switching. Translations are type-safe and organized by feature domain."
+      },
+      "testing": {
+        "title": "Testing Strategy",
+        "description": "Vitest provides fast unit testing with React Testing Library for component testing. MSW enables API mocking for integration testing without backend dependencies."
+      }
+    },
+    "practices": {
+      "title": "Best Practices & Standards",
+      "code": {
+        "title": "Code Quality",
+        "typeScript": "Full TypeScript coverage with strict mode enabled",
+        "eslint": "ESLint configuration with React hooks and TypeScript rules",
+        "prettier": "Prettier for consistent code formatting",
+        "strict": "Strict null checks and type safety throughout"
+      },
+      "performance": {
+        "title": "Performance Optimization",
+        "memoization": "React.memo and useMemo for expensive computations",
+        "lazy": "Code splitting and lazy loading for optimal bundle size",
+        "optimization": "Optimized re-renders with proper dependency arrays",
+        "bundle": "Tree-shaking and dead code elimination"
+      },
+      "ux": {
+        "title": "User Experience",
+        "responsive": "Mobile-first responsive design for all screen sizes",
+        "darkMode": "Seamless dark mode with system preference detection",
+        "loading": "Loading states and skeleton screens for better perceived performance",
+        "feedback": "Toast notifications and error handling for user feedback"
+      },
+      "maintainability": {
+        "title": "Maintainability",
+        "modular": "Modular file structure with clear separation of concerns",
+        "reusable": "Reusable components and custom hooks for code sharing",
+        "documented": "Comprehensive code comments and type definitions",
+        "tested": "Unit tests for critical business logic and utilities"
+      }
     }
   }
 }

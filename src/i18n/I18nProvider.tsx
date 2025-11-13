@@ -15,7 +15,7 @@ const translations: Record<Language, Translations> = {
 interface I18nContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
@@ -47,9 +47,21 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLanguageState(lang);
   };
 
-  const t = (key: string): string => {
-    const translation = getNestedValue(translations[language], key);
-    return translation || key;
+  const t = (key: string, params?: Record<string, string | number>): string => {
+    let translation = getNestedValue(translations[language], key);
+    if (!translation || translation === key) {
+      return key;
+    }
+    // Replace placeholders like {field}, {min}, {max}, etc.
+    if (params) {
+      Object.keys(params).forEach((paramKey) => {
+        translation = translation.replace(
+          new RegExp(`\\{${paramKey}\\}`, 'g'),
+          String(params[paramKey])
+        );
+      });
+    }
+    return translation;
   };
 
   return (

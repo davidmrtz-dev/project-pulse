@@ -32,7 +32,7 @@ type AlertsProps = {
 
 export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode(); // Force re-render when theme changes
+  const { isDark: _isDark } = useDarkMode();
 
   if (error) {
     return <ErrorCard message={error} onRetry={onRetry} />;
@@ -66,6 +66,10 @@ export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
           const Icon = alertIcons[alert.type];
           const timeAgo = getTimeAgo(new Date(alert.timestamp), t);
           
+          const translatedMessage = alert.message.startsWith('alerts.messages.')
+            ? t(alert.message, alert.messageParams)
+            : alert.message;
+          
           return (
             <div
               key={alert.id}
@@ -73,7 +77,7 @@ export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
             >
               <Icon className="w-5 h-5 mt-0.5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{alert.message}</p>
+                <p className="text-sm font-medium">{translatedMessage}</p>
                 <p className="text-xs mt-1 opacity-75">{timeAgo}</p>
               </div>
             </div>
@@ -84,7 +88,7 @@ export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
   );
 }
 
-function getTimeAgo(date: Date, t: (key: string) => string): string {
+function getTimeAgo(date: Date, t: (key: string, params?: Record<string, string | number>) => string): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
