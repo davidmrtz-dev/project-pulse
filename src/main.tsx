@@ -4,15 +4,13 @@ import './styles/globals.css';
 import { I18nProvider } from './i18n/I18nProvider';
 
 async function prepare() {
-  if (import.meta.env.DEV) {
-    try {
-      const { worker } = await import('./lib/msw/browser');
-      await worker.start({
-        onUnhandledRequest: 'bypass',
-      });
-    } catch (error) {
-      console.warn('MSW initialization failed:', error);
-    }
+  try {
+    const { worker } = await import('./lib/msw/browser');
+    await worker.start({
+      onUnhandledRequest: 'bypass',
+    });
+  } catch (error) {
+    console.warn('MSW initialization failed:', error);
   }
 }
 
