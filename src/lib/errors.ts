@@ -2,12 +2,15 @@
  * Custom error class that includes a translation key
  */
 export class TranslatableError extends Error {
+  translationKey: string;
+  
   constructor(
-    public translationKey: string,
+    translationKey: string,
     message?: string
   ) {
     super(message || translationKey);
     this.name = 'TranslatableError';
+    this.translationKey = translationKey;
     // Maintains proper stack trace for where our error was thrown (only available on V8)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, TranslatableError);

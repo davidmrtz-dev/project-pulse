@@ -13,11 +13,9 @@ import {
   FolderKanban
 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
-import { useDarkMode } from '../hooks/useDarkMode';
 
 export function About() {
   const { t } = useI18n();
-  const { isDark } = useDarkMode();
 
   const features = [
     {

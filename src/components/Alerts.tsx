@@ -1,15 +1,8 @@
 import { AlertTriangle, Info, XCircle } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
-import { useDarkMode } from '../hooks/useDarkMode';
 import { LoadingSpinner } from './Loading';
 import { ErrorCard } from './Error';
-
-type Alert = {
-  id: string;
-  type: 'warning' | 'error' | 'info';
-  message: string;
-  timestamp: string;
-};
+import type { Alert } from '../types';
 
 const alertIcons = {
   warning: AlertTriangle,
@@ -32,7 +25,6 @@ type AlertsProps = {
 
 export function Alerts({ alerts, loading, error, onRetry }: AlertsProps) {
   const { t } = useI18n();
-  const { isDark: _isDark } = useDarkMode();
 
   if (error) {
     return <ErrorCard message={error} onRetry={onRetry} />;
