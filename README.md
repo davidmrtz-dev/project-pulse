@@ -1,226 +1,226 @@
 # 📊 Project Pulse
 
-> **Dashboard de analítica de proyectos** - Demo front-end para visualización de métricas y rendimiento de equipos
+> **Project Analytics Dashboard** - Front-end demo for visualizing metrics and team performance
 
-Project Pulse es un dashboard interactivo diseñado para equipos que necesitan visualizar el rendimiento de sus proyectos en tiempo real. Ofrece una vista consolidada del estado operativo: progreso, eficiencia del equipo, tiempos de entrega, riesgos y rendimiento general.
+Project Pulse is an interactive dashboard designed for teams that need to visualize their project performance in real-time. It offers a consolidated view of operational status: progress, team efficiency, delivery times, risks, and overall performance.
 
-## ✨ Características
+## ✨ Features
 
-### 📈 Dashboard y Métricas
-- **KPIs en tiempo real** con indicadores de tendencia (↑↓)
-- **Comparación de períodos** para analizar mejoras o regresiones
-- **6 tipos de gráficos interactivos**:
-  - Velocidad mensual
-  - Tasa de finalización
-  - Crecimiento del backlog
-  - Tendencias semanales
-  - Distribución de estado de tareas
-  - Carga de trabajo del equipo
+### 📈 Dashboard and Metrics
+- **Real-time KPIs** with trend indicators (↑↓)
+- **Period comparison** to analyze improvements or regressions
+- **6 types of interactive charts**:
+  - Monthly velocity
+  - Completion rate
+  - Backlog growth
+  - Weekly trends
+  - Task status distribution
+  - Team workload
 
-### 🎯 Gestión de Proyectos
-- **Tabla interactiva** con filtros avanzados
-- **CRUD completo** (Crear, Leer, Actualizar, Eliminar)
-- **Búsqueda y ordenamiento** por columnas
-- **Filtros por**: fecha, equipo, estado, prioridad
+### 🎯 Project Management
+- **Interactive table** with advanced filters
+- **Full CRUD** (Create, Read, Update, Delete)
+- **Search and sorting** by columns
+- **Filters by**: date, team, status, priority
 
-### 👥 Rendimiento del Equipo
-- **Visualización comparativa** de miembros del equipo
-- **Métricas individuales**: velocidad, cumplimiento, productividad
-- **CRUD de miembros del equipo**
+### 👥 Team Performance
+- **Comparative visualization** of team members
+- **Individual metrics**: velocity, compliance, productivity
+- **Team member CRUD**
 
-### 🔔 Sistema de Alertas
-- **Notificaciones en tiempo real** de riesgos y eventos
-- **Categorización** por tipo (warning, error, info)
-- **Timestamps relativos** (hace X minutos/horas/días)
+### 🔔 Alert System
+- **Real-time notifications** of risks and events
+- **Categorization** by type (warning, error, info)
+- **Relative timestamps** (X minutes/hours/days ago)
 
-### 🌐 Internacionalización
-- **Soporte multiidioma**: Español e Inglés
-- **Cambio dinámico** de idioma sin recargar
+### 🌐 Internationalization
+- **Multi-language support**: Spanish and English
+- **Dynamic language switching** without reloading
 
-### 🎨 Experiencia de Usuario
-- **Dark mode** con transiciones suaves
-- **Diseño responsive** (Desktop, Tablet, Mobile)
-- **Exportación a CSV** de proyectos, equipo, alertas y KPIs
-- **Modales y confirmaciones** para acciones críticas
-- **Estados de carga y error** con opción de reintento
-- **Drill-down interactivo** en gráficos
+### 🎨 User Experience
+- **Dark mode** with smooth transitions
+- **Responsive design** (Desktop, Tablet, Mobile)
+- **CSV export** of projects, team, alerts, and KPIs
+- **Modals and confirmations** for critical actions
+- **Loading and error states** with retry option
+- **Interactive drill-down** in charts
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Tech Stack
 
-| Categoría | Tecnología | Versión |
-|-----------|-----------|---------|
+| Category | Technology | Version |
+|----------|-----------|---------|
 | **Core** | React | 18.3.1 |
-| **Lenguaje** | TypeScript | 5.6.2 |
+| **Language** | TypeScript | 5.6.2 |
 | **Build Tool** | Vite | 5.4.8 |
-| **Estilos** | TailwindCSS | 3.4.13 |
-| **Estado Global** | Zustand | 4.5.3 |
-| **Tablas** | TanStack Table | 8.19.2 |
-| **Gráficos** | Recharts | 2.12.7 |
-| **Formularios** | React Hook Form + Zod | 7.53.0 / 3.23.8 |
-| **Iconos** | Lucide React | 0.462.0 |
+| **Styles** | TailwindCSS | 3.4.13 |
+| **Global State** | Zustand | 4.5.3 |
+| **Tables** | TanStack Table | 8.19.2 |
+| **Charts** | Recharts | 2.12.7 |
+| **Forms** | React Hook Form + Zod | 7.53.0 / 3.23.8 |
+| **Icons** | Lucide React | 0.462.0 |
 | **Mock API** | MSW | 2.4.9 |
 
-## 📋 Requisitos
+## 📋 Requirements
 
-- **Node.js**: >= 20 (recomendado usar nvm)
-- **npm**: >= 9 (incluido con Node.js 20)
+- **Node.js**: >= 20 (recommended to use nvm)
+- **npm**: >= 9 (included with Node.js 20)
 
-## 🚀 Instalación
+## 🚀 Installation
 
-1. **Clonar el repositorio**
+1. **Clone the repository**
    ```bash
    git clone <repository-url>
    cd project-pulse
    ```
 
-2. **Usar la versión correcta de Node.js**
+2. **Use the correct Node.js version**
    ```bash
    nvm use 20
-   # O si no tienes nvm instalado:
+   # Or if you don't have nvm installed:
    # nvm install 20
    # nvm use 20
    ```
 
-3. **Instalar dependencias**
+3. **Install dependencies**
    ```bash
    npm install
    ```
 
-4. **Iniciar el servidor de desarrollo**
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-5. **Abrir en el navegador**
+5. **Open in browser**
    ```
    http://localhost:5173
    ```
 
-## 📜 Scripts Disponibles
+## 📜 Available Scripts
 
-| Comando | Descripción |
+| Command | Description |
 |---------|-------------|
-| `npm run dev` | Inicia el servidor de desarrollo con HMR |
-| `npm run build` | Compila el proyecto para producción |
-| `npm run preview` | Previsualiza la build de producción |
-| `npm run lint` | Ejecuta ESLint en el código |
-| `npm run format` | Formatea el código con Prettier |
-| `npm test` | Ejecuta los tests con Vitest |
+| `npm run dev` | Starts the development server with HMR |
+| `npm run build` | Builds the project for production |
+| `npm run preview` | Previews the production build |
+| `npm run lint` | Runs ESLint on the code |
+| `npm run format` | Formats the code with Prettier |
+| `npm test` | Runs tests with Vitest |
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
 ```
 project-pulse/
 ├── src/
-│   ├── components/          # Componentes React
-│   │   ├── charts/         # Componentes de gráficos
-│   │   └── modals/         # Modales reutilizables
+│   ├── components/          # React components
+│   │   ├── charts/         # Chart components
+│   │   └── modals/         # Reusable modals
 │   ├── hooks/              # Custom hooks
-│   ├── i18n/               # Configuración de internacionalización
-│   │   └── locales/        # Archivos de traducción (en.json, es.json)
-│   ├── lib/                 # Utilidades y helpers
-│   │   ├── msw/            # Mock Service Worker (API simulada)
-│   │   ├── csvExport.ts    # Funciones de exportación
-│   │   └── validation.ts  # Esquemas de validación
-│   ├── store/              # Estado global (Zustand)
-│   ├── styles/            # Estilos globales
-│   ├── types/              # Definiciones de TypeScript
-│   ├── App.tsx             # Componente principal
-│   └── main.tsx            # Punto de entrada
-├── public/                 # Archivos estáticos
-├── dist/                    # Build de producción (generado)
-├── .nvmrc                  # Versión de Node.js (20)
+│   ├── i18n/               # Internationalization configuration
+│   │   └── locales/        # Translation files (en.json, es.json)
+│   ├── lib/                 # Utilities and helpers
+│   │   ├── msw/            # Mock Service Worker (simulated API)
+│   │   ├── csvExport.ts    # Export functions
+│   │   └── validation.ts  # Validation schemas
+│   ├── store/              # Global state (Zustand)
+│   ├── styles/            # Global styles
+│   ├── types/              # TypeScript definitions
+│   ├── App.tsx             # Main component
+│   └── main.tsx            # Entry point
+├── public/                 # Static files
+├── dist/                    # Production build (generated)
+├── .nvmrc                  # Node.js version (20)
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
 └── tailwind.config.js
 ```
 
-## 🎯 Funcionalidades Principales
+## 🎯 Main Features
 
 ### Dashboard Overview
-- **6 KPIs principales** con indicadores de tendencia
-- **Comparación de períodos** (actual vs anterior)
-- **Gráficos interactivos** con drill-down
-- **Visualización de métricas clave**:
-  - Throughput (tareas/semana)
-  - Cycle Time (días promedio)
+- **6 main KPIs** with trend indicators
+- **Period comparison** (current vs previous)
+- **Interactive charts** with drill-down
+- **Key metrics visualization**:
+  - Throughput (tasks/week)
+  - Cycle Time (average days)
   - On-Time Rate (%)
-  - Proyectos activos
-  - Tareas totales/completadas
+  - Active projects
+  - Total/completed tasks
 
-### Gestión de Proyectos
-- **Vista de tabla** con todas las columnas relevantes
-- **Filtros avanzados**:
-  - Rango de fechas (semana, mes, trimestre, año)
-  - Miembro del equipo
-  - Estado (on-track, delayed, blocked)
-  - Prioridad (high, medium, low)
-- **Búsqueda global** en tiempo real
-- **Ordenamiento** por cualquier columna
-- **CRUD completo** con validación
+### Project Management
+- **Table view** with all relevant columns
+- **Advanced filters**:
+  - Date range (week, month, quarter, year)
+  - Team member
+  - Status (on-track, delayed, blocked)
+  - Priority (high, medium, low)
+- **Real-time global search**
+- **Sorting** by any column
+- **Full CRUD** with validation
 
-### Rendimiento del Equipo
-- **Gráfico de barras** comparativo de velocidad
-- **Tarjetas individuales** con métricas detalladas
-- **Gestión de miembros** (crear, editar, eliminar)
+### Team Performance
+- **Comparative bar chart** of velocity
+- **Individual cards** with detailed metrics
+- **Member management** (create, edit, delete)
 
-### Exportación de Datos
-- **Exportar a CSV**:
-  - Proyectos (filtrados)
-  - Miembros del equipo
-  - Alertas
-  - Todos los datos (consolidado)
+### Data Export
+- **Export to CSV**:
+  - Projects (filtered)
+  - Team members
+  - Alerts
+  - All data (consolidated)
 
-## 🎨 Temas y Personalización
+## 🎨 Themes and Customization
 
-El proyecto incluye:
-- **Dark mode** completo con paleta de colores personalizada
-- **Transiciones suaves** entre temas
-- **Diseño responsive** optimizado para todos los dispositivos
+The project includes:
+- **Complete dark mode** with custom color palette
+- **Smooth transitions** between themes
+- **Responsive design** optimized for all devices
 
-## 🌍 Internacionalización
+## 🌍 Internationalization
 
-El proyecto soporta múltiples idiomas:
-- **Español** (es)
-- **Inglés** (en)
+The project supports multiple languages:
+- **Spanish** (es)
+- **English** (en)
 
-El idioma se puede cambiar dinámicamente desde el header sin recargar la página.
+The language can be changed dynamically from the header without reloading the page.
 
-## 📝 Notas Importantes
+## 📝 Important Notes
 
-### Demo Front-end
-Este es un **proyecto demo** que simula una API real usando **MSW (Mock Service Worker)**. Todos los datos son ficticios y se generan dinámicamente. Los cambios realizados (crear, editar, eliminar) se mantienen en memoria durante la sesión pero se pierden al recargar la página.
+### Front-end Demo
+This is a **demo project** that simulates a real API using **MSW (Mock Service Worker)**. All data is fictional and generated dynamically. Changes made (create, edit, delete) are maintained in memory during the session but are lost when reloading the page.
 
-### Datos Simulados
-- Los KPIs y métricas se generan con valores aleatorios dentro de rangos realistas
-- Los proyectos y miembros del equipo tienen datos de ejemplo
-- Las alertas se generan automáticamente
+### Simulated Data
+- KPIs and metrics are generated with random values within realistic ranges
+- Projects and team members have example data
+- Alerts are generated automatically
 
-### Estado de la Aplicación
-- El estado se gestiona con **Zustand** (lightweight state management)
-- Los datos se "persisten" en memoria durante la sesión
-- Al recargar, se vuelven a cargar los datos iniciales del mock
+### Application State
+- State is managed with **Zustand** (lightweight state management)
+- Data is "persisted" in memory during the session
+- On reload, initial mock data is loaded again
 
-## 🚧 Próximas Mejoras (Roadmap)
+## 🚧 Upcoming Improvements (Roadmap)
 
-- [ ] Autenticación simulada con roles
-- [ ] Exportación a PDF
-- [ ] Búsqueda global mejorada
-- [ ] Filtros guardados/vistas personalizadas
-- [ ] Modo presentación (ocultar UI, resaltar gráficos)
-- [ ] Atajos de teclado
-- [ ] Tests unitarios completos
-- [ ] Storybook para documentación de componentes
+- [ ] Simulated authentication with roles
+- [ ] PDF export
+- [ ] Enhanced global search
+- [ ] Saved filters/custom views
+- [ ] Presentation mode (hide UI, highlight charts)
+- [ ] Keyboard shortcuts
+- [ ] Complete unit tests
+- [ ] Storybook for component documentation
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto es un demo para portafolio. Todos los derechos reservados.
+This project is a portfolio demo. All rights reserved.
 
-## 👤 Autor
+## 👤 Author
 
-Desarrollado para **Marga Solutions** - Demo de dashboard analítico
+Developed for **Marga Solutions** - Analytics dashboard demo
 
 ---
 
-**Nota**: Este proyecto utiliza Node.js 20. Asegúrate de tener la versión correcta instalada usando `nvm use 20` antes de ejecutar cualquier comando.
+**Note**: This project uses Node.js 20. Make sure you have the correct version installed using `nvm use 20` before running any command.
